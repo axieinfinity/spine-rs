@@ -23,3 +23,5 @@ is-it-maintained-open-issues = { repository = "skymavis/spine-rs" }
 maintenance = { status = "actively-developed" }
 
 [build-dependencies]
+bindgen = "0.53.1"
+cmake = "0.1.42"
