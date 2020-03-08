@@ -1,12 +1,22 @@
+use std::ffi::CString;
 use std::marker::PhantomData;
 use std::ptr::NonNull;
 
 use spine_sys::*;
 
+use super::error::{Error, Result};
+
 #[repr(transparent)]
 pub struct Atlas(NonNull<spAtlas>);
 
 impl Atlas {
+    pub fn from_file(path: &str) -> Result<Self> {
+        let path = CString::new(path)?;
+        let pointer = unsafe { spAtlas_createFromFile(path.as_ptr(), std::ptr::null_mut()) };
+        let atlas = NonNull::new(pointer).ok_or(Error::NullPointer)?;
+        Ok(Self(atlas))
+    }
+
     pub fn pages(&self) -> PageIter {
         let page = unsafe { self.0.as_ref().pages };
         PageIter::new(page)
