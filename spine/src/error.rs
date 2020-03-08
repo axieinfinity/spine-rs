@@ -10,7 +10,7 @@ pub enum Error {
     Io(io::Error),
     Utf8(Utf8Error),
     NullPointer,
-    Other(&'static str),
+    Other(Box<dyn StdError>),
 }
 
 impl fmt::Display for Error {
@@ -18,10 +18,10 @@ impl fmt::Display for Error {
         use Error::*;
 
         match self {
-            Io(ref error) => error.fmt(f),
-            Utf8(ref error) => error.fmt(f),
+            Io(error) => error.fmt(f),
+            Utf8(error) => error.fmt(f),
             NullPointer => f.write_str("null pointer encountered"),
-            Other(message) => message.fmt(f),
+            Other(error) => error.fmt(f),
         }
     }
 }
@@ -42,10 +42,17 @@ impl From<Utf8Error> for Error {
     }
 }
 
-impl From<&'static str> for Error {
+impl From<Box<dyn StdError>> for Error {
     #[inline]
-    fn from(message: &'static str) -> Self {
-        Error::Other(message)
+    fn from(error: Box<dyn StdError>) -> Self {
+        Error::Other(error)
+    }
+}
+
+impl From<&str> for Error {
+    #[inline]
+    fn from(message: &str) -> Self {
+        Error::Other(message.into())
     }
 }
 
