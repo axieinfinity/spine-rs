@@ -1,0 +1,28 @@
+[package]
+name = "spine-glium"
+version = "0.1.0"
+description = "Spine runtime for Rust with Glium backend."
+authors = ["Sky Mavis Engineering <engineering@skymavis.com>"]
+edition = "2018"
+license = "MIT"
+homepage = "https://github.com/skymavis/spine-rs"
+repository = "https://github.com/skymavis/spine-rs"
+categories = ["graphics", "rendering"]
+keywords = ["spine", "glium"]
+include = ["src/**/*", "LICENSE", "README.md"]
+readme = "README.md"
+
+[package.metadata.docs.rs]
+all-features = true
+
+[badges]
+travis-ci = { repository = "skymavis/spine-rs", branch = "master" }
+coveralls = { repository = "skymavis/spine-rs", branch = "master" }
+is-it-maintained-issue-resolution = { repository = "skymavis/spine-rs" }
+is-it-maintained-open-issues = { repository = "skymavis/spine-rs" }
+maintenance = { status = "actively-developed" }
+
+[dependencies]
+image = "0.23.0"
+glium = "0.26.0"
+spine = { path = "../spine" }
