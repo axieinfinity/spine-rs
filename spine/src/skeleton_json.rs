@@ -8,13 +8,16 @@ use super::error::Error;
 use super::result::Result;
 
 #[repr(transparent)]
-pub struct SkeletonJson<'a>(NonNull<spSkeletonJson>, PhantomData<&'a ()>);
+pub struct SkeletonJson<'a>(
+    pub(crate) NonNull<spSkeletonJson>,
+    pub(crate) PhantomData<&'a ()>,
+);
 
 impl<'a> SkeletonJson<'a> {
     pub fn from_atlas(atlas: &'a Atlas) -> Result<Self> {
         let pointer = unsafe { spSkeletonJson_create(atlas.0.as_ptr()) };
-        let skeleton_json = NonNull::new(pointer).ok_or(Error::NullPointer)?;
-        Ok(Self(skeleton_json, PhantomData))
+        let pointer = NonNull::new(pointer).ok_or(Error::NullPointer)?;
+        Ok(Self(pointer, PhantomData))
     }
 
     pub fn set_scale(&mut self, scale: f32) -> &mut Self {

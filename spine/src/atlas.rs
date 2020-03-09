@@ -15,8 +15,8 @@ impl Atlas {
     pub fn from_file(path: &str) -> Result<Self> {
         let path = CString::new(path)?;
         let pointer = unsafe { spAtlas_createFromFile(path.as_ptr(), std::ptr::null_mut()) };
-        let atlas = NonNull::new(pointer).ok_or(Error::NullPointer)?;
-        Ok(Self(atlas))
+        let pointer = NonNull::new(pointer).ok_or(Error::NullPointer)?;
+        Ok(Self(pointer))
     }
 
     pub fn pages(&self) -> PageIter {
