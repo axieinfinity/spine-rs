@@ -1,12 +1,8 @@
-use std::ffi::CString;
-use std::marker::PhantomData;
-use std::ptr::NonNull;
+use std::{ffi::CString, marker::PhantomData, ptr::NonNull};
 
 use spine_sys::{spAtlas, spAtlasPage, spAtlas_createFromFile, spAtlas_dispose};
 
-use super::atlas_page::AtlasPage;
-use super::error::Error;
-use super::result::Result;
+use super::{atlas_page::AtlasPage, error::Error, result::Result};
 
 #[repr(transparent)]
 pub struct Atlas(pub(crate) NonNull<spAtlas>);
@@ -49,9 +45,9 @@ impl<'a> Iterator for PageIter<'a> {
     type Item = &'a AtlasPage;
 
     fn next(&mut self) -> Option<Self::Item> {
-        NonNull::new(self.page).map(|page| unsafe {
-            self.page = page.as_ref().next;
-            &*(page.as_ptr() as *mut AtlasPage)
+        NonNull::new(self.page).map(|pointer| unsafe {
+            self.page = pointer.as_ref().next;
+            &*(pointer.as_ptr() as *mut AtlasPage)
         })
     }
 }
