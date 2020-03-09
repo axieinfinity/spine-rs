@@ -7,7 +7,10 @@ use spine_sys::{
     spMeshAttachment, spRegionAttachment,
 };
 
-use super::{error::Error, result::Result};
+use super::{
+    error::{Error, NullPointerError},
+    result::Result,
+};
 
 pub enum Attachment<'skel> {
     Region(RegionAttachment<'skel>),
@@ -29,7 +32,7 @@ pub struct MeshAttachment<'skel>(
 
 impl<'a> Attachment<'a> {
     pub(crate) fn from_pointer(pointer: *mut spAttachment) -> Result<Self> {
-        let pointer = NonNull::new(pointer).ok_or(Error::NullPointer)?;
+        let pointer = NonNull::new(pointer).ok_or(Error::invalid_input(NullPointerError))?;
 
         Ok(match unsafe { pointer.as_ref().type_ } {
             spAttachmentType_SP_ATTACHMENT_REGION => {

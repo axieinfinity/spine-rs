@@ -2,7 +2,7 @@ use std::{marker::PhantomData, ptr::NonNull};
 
 use spine_sys::{spSkeletonJson, spSkeletonJson_create, spSkeletonJson_dispose};
 
-use super::{atlas::Atlas, error::Error, result::Result};
+use super::atlas::Atlas;
 
 #[repr(transparent)]
 pub struct SkeletonJson<'atlas>(
@@ -11,10 +11,10 @@ pub struct SkeletonJson<'atlas>(
 );
 
 impl<'a> SkeletonJson<'a> {
-    pub fn from_atlas(atlas: &'a Atlas) -> Result<Self> {
+    pub fn from_atlas(atlas: &'a Atlas) -> Self {
         let pointer = unsafe { spSkeletonJson_create(atlas.0.as_ptr()) };
-        let pointer = NonNull::new(pointer).ok_or(Error::NullPointer)?;
-        Ok(Self(pointer, PhantomData))
+        let pointer = NonNull::new(pointer).unwrap();
+        Self(pointer, PhantomData)
     }
 
     pub fn set_scale(&mut self, scale: f32) -> &mut Self {

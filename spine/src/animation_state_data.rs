@@ -2,7 +2,7 @@ use std::{marker::PhantomData, ptr::NonNull};
 
 use spine_sys::{spAnimationStateData, spAnimationStateData_create, spAnimationStateData_dispose};
 
-use super::{error::Error, result::Result, skeleton_data::SkeletonData};
+use super::skeleton_data::SkeletonData;
 
 #[repr(transparent)]
 pub struct AnimationStateData<'skel_data>(
@@ -11,10 +11,10 @@ pub struct AnimationStateData<'skel_data>(
 );
 
 impl<'a> AnimationStateData<'a> {
-    pub fn new(skeleton_data: &'a SkeletonData) -> Result<Self> {
+    pub fn new(skeleton_data: &'a SkeletonData) -> Self {
         let pointer = unsafe { spAnimationStateData_create(skeleton_data.0.as_ptr()) };
-        let pointer = NonNull::new(pointer).ok_or(Error::NullPointer)?;
-        Ok(AnimationStateData(pointer, PhantomData))
+        let pointer = NonNull::new(pointer).unwrap();
+        AnimationStateData(pointer, PhantomData)
     }
 }
 

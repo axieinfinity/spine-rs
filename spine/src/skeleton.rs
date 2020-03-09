@@ -2,7 +2,7 @@ use std::{marker::PhantomData, ptr::NonNull, slice};
 
 use spine_sys::{spSkeleton, spSkeleton_create, spSkeleton_dispose};
 
-use super::{error::Error, result::Result, skeleton_data::SkeletonData, slot::Slot};
+use super::{skeleton_data::SkeletonData, slot::Slot};
 
 #[repr(transparent)]
 pub struct Skeleton<'skel_data>(
@@ -11,10 +11,10 @@ pub struct Skeleton<'skel_data>(
 );
 
 impl<'a> Skeleton<'a> {
-    pub fn new(data: &'a SkeletonData) -> Result<Self> {
+    pub fn new(data: &'a SkeletonData) -> Self {
         let pointer = unsafe { spSkeleton_create(data.0.as_ptr()) };
-        let pointer = NonNull::new(pointer).ok_or(Error::NullPointer)?;
-        Ok(Skeleton(pointer, PhantomData))
+        let pointer = NonNull::new(pointer).unwrap();
+        Skeleton(pointer, PhantomData)
     }
 }
 

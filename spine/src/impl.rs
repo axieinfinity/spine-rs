@@ -1,12 +1,17 @@
-use std::ffi::{CStr, CString};
-use std::fs::File;
-use std::io::{BufReader, Read};
-use std::os::raw::c_char;
+use std::{
+    ffi::{CStr, CString},
+    fs::File,
+    io::{BufReader, Read},
+    os::raw::c_char,
+};
 
-use super::{result::Result, texture::Texture};
+use super::{error::Error, result::Result, texture::Texture};
 
 fn to_str<'a>(s: *const c_char) -> Result<&'a str> {
-    let s = unsafe { CStr::from_ptr(s) }.to_str()?;
+    let s = unsafe { CStr::from_ptr(s) }
+        .to_str()
+        .map_err(Error::invalid_input)?;
+
     Ok(s)
 }
 

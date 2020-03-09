@@ -20,7 +20,7 @@ impl spine::Texture for Texture {
 fn read_texture_file(path: &str) -> spine::Result<Texture> {
     image::open(path)
         .map(Texture)
-        .map_err(|error| (Box::new(error) as Box<dyn Error>).into())
+        .map_err(|error| spine::Error::Other(Box::new(error) as Box<dyn Error>))
 }
 
 spine::impl_spine!(DynamicImage, read_texture_file);

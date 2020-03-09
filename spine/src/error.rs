@@ -1,13 +1,21 @@
-use std::ffi::NulError;
-use std::str::Utf8Error;
-use std::{error::Error as StdError, fmt, io};
+use std::{error::Error as StdError, ffi::NulError, fmt, io};
 
 #[derive(Debug)]
 pub enum Error {
     Io(io::Error),
-    Utf8(Utf8Error),
-    NullPointer,
     Other(Box<dyn StdError>),
+}
+
+impl Error {
+    #[inline]
+    pub fn invalid_input(error: impl Into<Box<dyn StdError + Send + Sync>>) -> Self {
+        io::Error::new(io::ErrorKind::InvalidInput, error.into()).into()
+    }
+
+    #[inline]
+    pub fn invalid_data(error: impl Into<Box<dyn StdError + Send + Sync>>) -> Self {
+        io::Error::new(io::ErrorKind::InvalidData, error.into()).into()
+    }
 }
 
 impl fmt::Display for Error {
@@ -16,8 +24,6 @@ impl fmt::Display for Error {
 
         match self {
             Io(error) => error.fmt(f),
-            Utf8(error) => error.fmt(f),
-            NullPointer => f.write_str("null pointer encountered"),
             Other(error) => error.fmt(f),
         }
     }
@@ -32,30 +38,21 @@ impl From<io::Error> for Error {
     }
 }
 
-impl From<Utf8Error> for Error {
-    #[inline]
-    fn from(error: Utf8Error) -> Self {
-        Error::Utf8(error)
-    }
-}
-
-impl From<Box<dyn StdError>> for Error {
-    #[inline]
-    fn from(error: Box<dyn StdError>) -> Self {
-        Error::Other(error)
-    }
-}
-
-impl From<&str> for Error {
-    #[inline]
-    fn from(message: &str) -> Self {
-        Error::Other(message.into())
-    }
-}
-
 impl From<NulError> for Error {
     #[inline]
     fn from(error: NulError) -> Self {
         io::Error::from(error).into()
     }
 }
+
+#[derive(Debug)]
+pub struct NullPointerError;
+
+impl fmt::Display for NullPointerError {
+    #[inline]
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.write_str("null pointer encountered")
+    }
+}
+
+impl StdError for NullPointerError {}
