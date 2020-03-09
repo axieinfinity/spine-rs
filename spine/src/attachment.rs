@@ -9,22 +9,22 @@ use spine_sys::{
 
 use super::{error::Error, result::Result};
 
-pub enum Attachment<'a> {
-    Region(RegionAttachment<'a>),
-    Mesh(MeshAttachment<'a>),
+pub enum Attachment<'skel> {
+    Region(RegionAttachment<'skel>),
+    Mesh(MeshAttachment<'skel>),
     Other,
 }
 
 #[repr(transparent)]
-pub struct RegionAttachment<'a>(
+pub struct RegionAttachment<'skel>(
     pub(crate) NonNull<spRegionAttachment>,
-    pub(crate) PhantomData<&'a ()>,
+    pub(crate) PhantomData<&'skel ()>,
 );
 
 #[repr(transparent)]
-pub struct MeshAttachment<'a>(
+pub struct MeshAttachment<'skel>(
     pub(crate) NonNull<spMeshAttachment>,
-    pub(crate) PhantomData<&'a ()>,
+    pub(crate) PhantomData<&'skel ()>,
 );
 
 impl<'a> Attachment<'a> {

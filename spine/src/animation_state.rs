@@ -1,16 +1,13 @@
-use std::marker::PhantomData;
-use std::ptr::NonNull;
+use std::{marker::PhantomData, ptr::NonNull};
 
 use spine_sys::{spAnimationState, spAnimationState_create, spAnimationState_dispose};
 
-use super::animation_state_data::AnimationStateData;
-use super::error::Error;
-use super::result::Result;
+use super::{animation_state_data::AnimationStateData, error::Error, result::Result};
 
 #[repr(transparent)]
-pub struct AnimationState<'a>(
+pub struct AnimationState<'anim_state_data>(
     pub(crate) NonNull<spAnimationState>,
-    pub(crate) PhantomData<&'a ()>,
+    pub(crate) PhantomData<&'anim_state_data ()>,
 );
 
 impl<'a> AnimationState<'a> {

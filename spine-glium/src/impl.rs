@@ -1,7 +1,6 @@
 use std::error::Error;
 
-use image::DynamicImage;
-use image::GenericImageView;
+use image::{DynamicImage, GenericImageView};
 
 #[repr(transparent)]
 struct Texture(DynamicImage);

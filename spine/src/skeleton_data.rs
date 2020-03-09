@@ -1,17 +1,13 @@
-use std::ffi::CString;
-use std::marker::PhantomData;
-use std::ptr::NonNull;
+use std::{ffi::CString, marker::PhantomData, ptr::NonNull};
 
 use spine_sys::{spSkeletonData, spSkeletonData_dispose, spSkeletonJson_readSkeletonDataFile};
 
-use super::error::Error;
-use super::result::Result;
-use super::skeleton_json::SkeletonJson;
+use super::{error::Error, result::Result, skeleton_json::SkeletonJson};
 
 #[repr(transparent)]
-pub struct SkeletonData<'a>(
+pub struct SkeletonData<'atlas>(
     pub(crate) NonNull<spSkeletonData>,
-    pub(crate) PhantomData<&'a ()>,
+    pub(crate) PhantomData<&'atlas ()>,
 );
 
 impl<'a> SkeletonData<'a> {

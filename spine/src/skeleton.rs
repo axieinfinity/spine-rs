@@ -5,13 +5,13 @@ use spine_sys::{spSkeleton, spSkeleton_create, spSkeleton_dispose};
 use super::{error::Error, result::Result, skeleton_data::SkeletonData, slot::Slot};
 
 #[repr(transparent)]
-pub struct Skeleton<'data>(
+pub struct Skeleton<'skel_data>(
     pub(crate) NonNull<spSkeleton>,
-    pub(crate) PhantomData<&'data ()>,
+    pub(crate) PhantomData<&'skel_data ()>,
 );
 
-impl<'data> Skeleton<'data> {
-    pub fn new(data: &'data SkeletonData) -> Result<Self> {
+impl<'a> Skeleton<'a> {
+    pub fn new(data: &'a SkeletonData) -> Result<Self> {
         let pointer = unsafe { spSkeleton_create(data.0.as_ptr()) };
         let pointer = NonNull::new(pointer).ok_or(Error::NullPointer)?;
         Ok(Skeleton(pointer, PhantomData))
@@ -33,12 +33,12 @@ macro_rules! impl_slots {
     };
 }
 
-impl<'data> Skeleton<'data> {
+impl<'a> Skeleton<'a> {
     impl_slots!(slots, slots);
     impl_slots!(slots_ordered, drawOrder);
 }
 
-impl<'data> Drop for Skeleton<'data> {
+impl<'a> Drop for Skeleton<'a> {
     fn drop(&mut self) {
         unsafe { spSkeleton_dispose(self.0.as_ptr()) }
     }

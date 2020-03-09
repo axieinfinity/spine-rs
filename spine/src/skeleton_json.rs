@@ -1,16 +1,13 @@
-use std::marker::PhantomData;
-use std::ptr::NonNull;
+use std::{marker::PhantomData, ptr::NonNull};
 
 use spine_sys::{spSkeletonJson, spSkeletonJson_create, spSkeletonJson_dispose};
 
-use super::atlas::Atlas;
-use super::error::Error;
-use super::result::Result;
+use super::{atlas::Atlas, error::Error, result::Result};
 
 #[repr(transparent)]
-pub struct SkeletonJson<'a>(
+pub struct SkeletonJson<'atlas>(
     pub(crate) NonNull<spSkeletonJson>,
-    pub(crate) PhantomData<&'a ()>,
+    pub(crate) PhantomData<&'atlas ()>,
 );
 
 impl<'a> SkeletonJson<'a> {

@@ -10,8 +10,8 @@ pub struct Slot<'skel>(
     pub(crate) PhantomData<&'skel ()>,
 );
 
-impl<'skel> Slot<'skel> {
-    pub fn attachment(&self) -> Option<Attachment<'skel>> {
+impl<'a> Slot<'a> {
+    pub fn attachment(&self) -> Option<Attachment<'a>> {
         let pointer = unsafe { self.0.as_ref().attachment };
         Attachment::from_pointer(pointer).ok()
     }
