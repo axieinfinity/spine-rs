@@ -3,7 +3,7 @@ use std::fs::File;
 use std::io::{BufReader, Read};
 use std::os::raw::c_char;
 
-use crate::{Result, Texture};
+use super::{result::Result, texture::Texture};
 
 fn to_str<'a>(s: *const c_char) -> Result<&'a str> {
     let s = unsafe { CStr::from_ptr(s) }.to_str()?;

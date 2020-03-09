@@ -1,9 +1,6 @@
 use std::ffi::NulError;
-use std::result::Result as StdResult;
 use std::str::Utf8Error;
 use std::{error::Error as StdError, fmt, io};
-
-pub type Result<T> = StdResult<T, Error>;
 
 #[derive(Debug)]
 pub enum Error {

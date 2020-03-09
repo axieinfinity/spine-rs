@@ -2,12 +2,14 @@ use std::ffi::CString;
 use std::marker::PhantomData;
 use std::ptr::NonNull;
 
-use spine_sys::*;
+use spine_sys::{spAtlas, spAtlasPage, spAtlas_createFromFile, spAtlas_dispose};
 
-use super::error::{Error, Result};
+use super::atlas_page::AtlasPage;
+use super::error::Error;
+use super::result::Result;
 
 #[repr(transparent)]
-pub struct Atlas(NonNull<spAtlas>);
+pub struct Atlas(pub(crate) NonNull<spAtlas>);
 
 impl Atlas {
     pub fn from_file(path: &str) -> Result<Self> {
@@ -28,9 +30,6 @@ impl Drop for Atlas {
         unsafe { spAtlas_dispose(self.0.as_ptr()) }
     }
 }
-
-#[repr(transparent)]
-pub struct AtlasPage(NonNull<spAtlasPage>);
 
 pub struct PageIter<'a> {
     page: *mut spAtlasPage,
