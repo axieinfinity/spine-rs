@@ -2,6 +2,7 @@ mod atlas;
 mod atlas_page;
 mod error;
 pub mod r#impl;
+mod skeleton_json;
 mod texture;
 
 mod result {
@@ -12,6 +13,7 @@ pub use atlas::*;
 pub use atlas_page::*;
 pub use error::*;
 pub use result::*;
+pub use skeleton_json::*;
 pub use texture::*;
 
 #[doc(hidden)]
