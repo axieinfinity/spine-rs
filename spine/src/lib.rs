@@ -10,7 +10,6 @@ pub mod glium;
 
 mod error;
 mod render;
-mod texture;
 
 mod result {
     pub type Result<T> = std::result::Result<T, super::Error>;
@@ -19,7 +18,6 @@ mod result {
 pub use error::*;
 pub use render::*;
 pub use result::*;
-pub use texture::*;
 
 #[doc(hidden)]
 pub use spine_sys;

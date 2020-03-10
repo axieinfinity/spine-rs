@@ -1,22 +1,30 @@
-use super::{result::Result, texture::Texture};
+use super::result::Result;
 
+use crate::skeleton::Skeleton;
+use image::DynamicImage;
+
+#[allow(non_snake_case)]
+#[derive(Clone, Copy)]
 pub struct Vertex {
-    pub position: [f32; 2],
-    pub texture_coords: [f32; 2],
+    pub a_position: [f32; 2],
+    pub a_texCoords: [f32; 2],
 }
 
 pub trait Renderer {
-    type Texture: Texture;
     type Frame;
 
-    fn prepare(&self) -> Self::Frame;
+    fn prepare_frame(&self) -> Self::Frame;
 
-    fn render(
+    fn render_in_frame(
         &self,
         frame: &mut Self::Frame,
         vertices: &[Vertex],
-        texture: &Self::Texture,
+        texture: &DynamicImage,
     ) -> Result<()>;
 
-    fn finish(&self, frame: Self::Frame) -> Result<()>;
+    fn finish_frame(&self, frame: Self::Frame) -> Result<()>;
+
+    fn render(&self, _skeleton: &Skeleton) -> Result<()> {
+        unimplemented!()
+    }
 }
