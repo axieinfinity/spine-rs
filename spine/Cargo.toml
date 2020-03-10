@@ -7,7 +7,7 @@ edition = "2018"
 license = "MIT"
 homepage = "https://github.com/skymavis/spine-rs"
 repository = "https://github.com/skymavis/spine-rs"
-categories = ["graphics", "rendering"]
+categories = ["api-bindings", "graphics", "rendering"]
 keywords = ["spine"]
 include = ["src/**/*", "LICENSE", "README.md"]
 readme = "README.md"
@@ -26,3 +26,7 @@ maintenance = { status = "actively-developed" }
 image = "0.23.0"
 glium = { version = "0.26.0", optional = true }
 spine-sys = { path = "../spine-sys" }
+
+[[example]]
+name = "glium"
+required-features = ["glium"]

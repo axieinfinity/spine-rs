@@ -1071,15 +1071,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "spine-glium"
-version = "0.1.0"
-dependencies = [
- "glium 0.26.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "image 0.23.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "spine 0.1.0",
-]
-
-[[package]]
 name = "spine-sys"
 version = "0.1.0"
 dependencies = [
