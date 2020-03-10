@@ -3,6 +3,7 @@ use std::{error::Error as StdError, ffi::NulError, fmt, io};
 #[derive(Debug)]
 pub enum Error {
     Io(io::Error),
+    Render(Box<dyn StdError>),
     Other(Box<dyn StdError>),
 }
 
@@ -16,6 +17,11 @@ impl Error {
     pub fn invalid_data(error: impl Into<Box<dyn StdError + Send + Sync>>) -> Self {
         io::Error::new(io::ErrorKind::InvalidData, error.into()).into()
     }
+
+    #[inline]
+    pub fn render(error: impl Into<Box<dyn StdError + Send + Sync>>) -> Self {
+        Error::Render(error.into())
+    }
 }
 
 impl fmt::Display for Error {
@@ -24,6 +30,7 @@ impl fmt::Display for Error {
 
         match self {
             Io(error) => error.fmt(f),
+            Render(error) => error.fmt(f),
             Other(error) => error.fmt(f),
         }
     }
