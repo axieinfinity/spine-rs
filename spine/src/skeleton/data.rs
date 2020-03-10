@@ -2,11 +2,12 @@ use std::{ffi::CString, marker::PhantomData, ptr::NonNull};
 
 use spine_sys::{spSkeletonData, spSkeletonData_dispose, spSkeletonJson_readSkeletonDataFile};
 
-use super::{
+use crate::{
     error::{Error, NullPointerError},
     result::Result,
-    skeleton_json::SkeletonJson,
 };
+
+use super::json::SkeletonJson;
 
 #[repr(transparent)]
 pub struct SkeletonData<'atlas>(

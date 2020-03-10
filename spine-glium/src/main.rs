@@ -1,4 +1,8 @@
-use spine::{AnimationState, AnimationStateData, Atlas, Skeleton, SkeletonData, SkeletonJson};
+use spine::{
+    animation::{AnimationState, AnimationStateData},
+    atlas::Atlas,
+    skeleton::{Skeleton, SkeletonData, SkeletonJson},
+};
 
 mod r#impl;
 

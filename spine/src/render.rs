@@ -18,5 +18,5 @@ pub trait Renderer {
         texture: &Self::Texture,
     ) -> Result<()>;
 
-    fn finish(&self, frame: &mut Self::Frame) -> Result<()>;
+    fn finish(&self, frame: Self::Frame) -> Result<()>;
 }

@@ -2,7 +2,7 @@ use std::{marker::PhantomData, ptr::NonNull};
 
 use spine_sys::{spSkeletonJson, spSkeletonJson_create, spSkeletonJson_dispose};
 
-use super::atlas::Atlas;
+use crate::atlas::Atlas;
 
 #[repr(transparent)]
 pub struct SkeletonJson<'atlas>(

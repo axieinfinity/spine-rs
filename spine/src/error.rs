@@ -1,4 +1,4 @@
-use std::{error::Error as StdError, ffi::NulError, fmt, io};
+use std::{error::Error as StdError, ffi, fmt, io};
 
 #[derive(Debug)]
 pub enum Error {
@@ -45,9 +45,9 @@ impl From<io::Error> for Error {
     }
 }
 
-impl From<NulError> for Error {
+impl From<ffi::NulError> for Error {
     #[inline]
-    fn from(error: NulError) -> Self {
+    fn from(error: ffi::NulError) -> Self {
         io::Error::from(error).into()
     }
 }

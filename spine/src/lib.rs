@@ -1,33 +1,24 @@
-mod animation_state;
-mod animation_state_data;
-mod atlas;
-mod atlas_page;
-mod attachment;
-mod error;
+pub mod animation;
+pub mod atlas;
+pub mod attachment;
 pub mod r#impl;
+pub mod skeleton;
+pub mod slot;
+
+#[cfg(feature = "glium")]
+pub mod glium;
+
+mod error;
 mod render;
-mod skeleton;
-mod skeleton_data;
-mod skeleton_json;
-mod slot;
 mod texture;
 
 mod result {
     pub type Result<T> = std::result::Result<T, super::Error>;
 }
 
-pub use animation_state::*;
-pub use animation_state_data::*;
-pub use atlas::*;
-pub use atlas_page::*;
-pub use attachment::*;
 pub use error::*;
 pub use render::*;
 pub use result::*;
-pub use skeleton::*;
-pub use skeleton_data::*;
-pub use skeleton_json::*;
-pub use slot::*;
 pub use texture::*;
 
 #[doc(hidden)]

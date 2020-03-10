@@ -52,27 +52,29 @@ impl Renderer for Display {
         vertices: &[spine::Vertex],
         texture: &Self::Texture,
     ) -> spine::Result<()> {
-        let vertices = unsafe {
-            std::slice::from_raw_parts(vertices.as_ptr() as *const Vertex, vertices.len())
-        };
+        // let vertices = unsafe {
+        //     std::slice::from_raw_parts(vertices.as_ptr() as *const Vertex, vertices.len())
+        // };
+        //
+        // let vertex_buffer =
+        //     glium::VertexBuffer::new(&self.0, vertices).map_err(spine::Error::render)?;
+        //
+        // let index_buffer = glium::index::NoIndices(glium::index::PrimitiveType::TrianglesList);
+        //
+        // frame
+        //     .draw(
+        //         &vertex_buffer,
+        //         &index_buffer,
+        //         unimplemented!(),
+        //         unimplemented!(),
+        //         unimplemented!(),
+        //     )
+        //     .map_err(spine::Error::render)
 
-        let vertex_buffer =
-            glium::VertexBuffer::new(&self.0, vertices).map_err(spine::Error::render)?;
-
-        let index_buffer = glium::index::NoIndices(glium::index::PrimitiveType::TrianglesList);
-
-        frame
-            .draw(
-                &vertex_buffer,
-                &index_buffer,
-                unimplemented!(),
-                unimplemented!(),
-                unimplemented!(),
-            )
-            .map_err(spine::Error::render)
+        unimplemented!()
     }
 
-    fn finish(&self, frame: &mut Self::Frame) -> spine::Result<()> {
+    fn finish(&self, frame: Self::Frame) -> spine::Result<()> {
         frame.finish().map_err(spine::Error::render)
     }
 }

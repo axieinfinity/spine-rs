@@ -2,11 +2,12 @@ use std::{ffi::CString, marker::PhantomData, ptr::NonNull};
 
 use spine_sys::{spAtlas, spAtlasPage, spAtlas_createFromFile, spAtlas_dispose};
 
-use super::{
-    atlas_page::AtlasPage,
+use crate::{
     error::{Error, NullPointerError},
     result::Result,
 };
+
+use super::page::AtlasPage;
 
 #[repr(transparent)]
 pub struct Atlas(pub(crate) NonNull<spAtlas>);

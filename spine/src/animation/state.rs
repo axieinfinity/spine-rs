@@ -2,7 +2,7 @@ use std::{marker::PhantomData, ptr::NonNull};
 
 use spine_sys::{spAnimationState, spAnimationState_create, spAnimationState_dispose};
 
-use super::animation_state_data::AnimationStateData;
+use super::state_data::AnimationStateData;
 
 #[repr(transparent)]
 pub struct AnimationState<'anim_state_data>(

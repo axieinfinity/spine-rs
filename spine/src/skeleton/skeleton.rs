@@ -2,7 +2,9 @@ use std::{marker::PhantomData, ptr::NonNull, slice};
 
 use spine_sys::{spSkeleton, spSkeleton_create, spSkeleton_dispose};
 
-use super::{skeleton_data::SkeletonData, slot::Slot};
+use crate::slot::Slot;
+
+use super::data::SkeletonData;
 
 #[repr(transparent)]
 pub struct Skeleton<'skel_data>(
