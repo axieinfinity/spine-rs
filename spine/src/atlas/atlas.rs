@@ -1,14 +1,14 @@
-use std::{collections::HashMap, ffi::CString, marker::PhantomData, ptr::NonNull, rc::Rc};
+use std::{ffi::CString, marker::PhantomData, ptr::NonNull, rc::Rc};
 
 use spine_sys::{spAtlas, spAtlasPage, spAtlas_createFromFile, spAtlas_dispose};
 
 use crate::{
     error::{Error, NullPointerError},
+    render::Renderer,
     result::Result,
 };
 
 use super::page::AtlasPage;
-use image::DynamicImage;
 
 #[repr(transparent)]
 pub struct Atlas {
@@ -16,7 +16,7 @@ pub struct Atlas {
 }
 
 impl Atlas {
-    pub fn from_file(path: &str) -> Result<Rc<Self>> {
+    pub(crate) fn new(path: &str) -> Result<Rc<Self>> {
         let path = CString::new(path)?;
         let pointer = unsafe { spAtlas_createFromFile(path.as_ptr(), std::ptr::null_mut()) };
 
@@ -30,13 +30,10 @@ impl Atlas {
         PageIter::new(page)
     }
 
-    pub fn build_textures<T, F>(&self, cache: &mut HashMap<usize, T>, build: F) -> Result<()>
-    where
-        F: Fn(&DynamicImage) -> Result<T>,
-    {
+    pub(crate) fn build_textures<R: Renderer>(&self, renderer: &mut R) -> Result<()> {
         for page in self.pages() {
-            let texture = build(page.texture())?;
-            cache.insert(page.id(), texture);
+            let texture = renderer.build_texture(page.texture())?;
+            renderer.add_texture(page.id(), texture);
         }
 
         Ok(())

@@ -36,7 +36,7 @@ pub struct MeshAttachment<'skel>(
 );
 
 impl<'a> Attachment<'a> {
-    pub(crate) fn from_pointer(pointer: *mut spAttachment) -> Result<Self> {
+    pub(crate) fn new(pointer: *mut spAttachment) -> Result<Self> {
         let pointer = NonNull::new(pointer).ok_or(Error::invalid_input(NullPointerError))?;
 
         Ok(match unsafe { pointer.as_ref().type_ } {

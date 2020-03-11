@@ -1,4 +1,9 @@
-use super::{atlas::AtlasPage, attachment::Attachment, result::Result, skeleton::Skeleton};
+use image::DynamicImage;
+use std::rc::Rc;
+
+use super::{
+    atlas::Atlas, attachment::Attachment, error::Error, result::Result, skeleton::Skeleton,
+};
 
 const MAX_VERTICES_PER_ATTACHMENT: usize = 2048;
 
@@ -14,13 +19,24 @@ pub struct Vertex {
     pub in_texture_coords: [f32; 2],
 }
 
-pub trait Renderer {
+pub trait Renderer: Sized {
+    type Texture;
     type Frame;
 
-    fn render_in_frame(
+    fn build_texture(&self, texture: &DynamicImage) -> Result<Self::Texture>;
+    fn add_texture(&mut self, id: usize, texture: Self::Texture);
+    fn get_texture(&self, id: &usize) -> Option<&Self::Texture>;
+
+    fn new_atlas(&mut self, path: &str) -> Result<Rc<Atlas>> {
+        let atlas = Atlas::new(path)?;
+        atlas.build_textures(self)?;
+        Ok(atlas)
+    }
+
+    fn render_mesh(
         &self,
         vertices: &[Vertex],
-        page: &AtlasPage,
+        texture: &Self::Texture,
         frame: &mut Self::Frame,
     ) -> Result<()>;
 
@@ -77,7 +93,14 @@ pub trait Renderer {
                 })
             }
 
-            self.render_in_frame(&vertices, &page, frame)?;
+            let texture = self
+                .get_texture(&page.id())
+                .ok_or(Error::invalid_data(format!(
+                    "texture of page named \"{}\" has not been initialized",
+                    page.name()?,
+                )))?;
+
+            self.render_mesh(&vertices, &texture, frame)?;
         }
 
         Ok(())

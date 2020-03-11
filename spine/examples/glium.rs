@@ -6,7 +6,6 @@ use std::{
 use glium::{glutin, Surface};
 use spine::{
     animation::{AnimationState, AnimationStateData},
-    atlas::Atlas,
     glium::GliumRenderer,
     skeleton::{Skeleton, SkeletonData, SkeletonJson},
     Renderer,
@@ -31,11 +30,11 @@ fn main() {
 
     let mut renderer = GliumRenderer::new(display).unwrap();
 
-    let atlas = Atlas::from_file(asset_dir.join("axie.atlas").to_str().unwrap()).unwrap();
+    let atlas = renderer
+        .new_atlas(asset_dir.join("axie.atlas").to_str().unwrap())
+        .unwrap();
 
-    renderer.build_textures(&atlas).unwrap();
-
-    let mut skeleton_json = SkeletonJson::from_atlas(&atlas);
+    let mut skeleton_json = SkeletonJson::new(&atlas);
     skeleton_json.set_scale(1.0);
 
     let skeleton_data =
@@ -46,7 +45,7 @@ fn main() {
 
     let mut skeleton = Skeleton::new(&skeleton_data);
 
-    skeleton.set_y(-280.0);
+    skeleton.set_y(-360.0);
 
     let mut animation_state = AnimationState::new(&animation_state_data);
 

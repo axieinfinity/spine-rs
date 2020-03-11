@@ -6,10 +6,9 @@ use glium::{
     texture::{RawImage2d, SrgbTexture2d},
     uniform, Blend, Display, DrawParameters, Frame, Program, Surface, VertexBuffer,
 };
-use image::GenericImageView;
+use image::{DynamicImage, GenericImageView};
 
 use super::{
-    atlas::{Atlas, AtlasPage},
     error::Error,
     render::{Renderer, Vertex},
     result::Result,
@@ -30,7 +29,7 @@ impl<'a> GliumRenderer<'a> {
         let fragment_shader = include_str!("./shaders/spine.frag");
 
         let program = Program::from_source(&display, vertex_shader, fragment_shader, None)
-            .map_err(Error::render)?;
+            .map_err(Error::invalid_data)?;
 
         let draw_parameters = DrawParameters {
             blend: Blend::alpha_blending(),
@@ -49,46 +48,46 @@ impl<'a> GliumRenderer<'a> {
     pub fn display(&self) -> &Display {
         &self.display
     }
-
-    #[inline]
-    pub fn build_textures(&mut self, atlas: &Atlas) -> Result<()> {
-        let Self {
-            display, textures, ..
-        } = self;
-
-        atlas.build_textures(textures, |texture| {
-            let image = RawImage2d::from_raw_rgba_reversed(
-                &texture.to_bytes(),
-                (texture.width(), texture.height()),
-            );
-
-            SrgbTexture2d::new(display, image).map_err(Error::render)
-        })
-    }
 }
 
 impl<'a> Renderer for GliumRenderer<'a> {
+    type Texture = SrgbTexture2d;
     type Frame = Frame;
 
-    fn render_in_frame(
+    fn build_texture(&self, texture: &DynamicImage) -> Result<Self::Texture> {
+        let image = RawImage2d::from_raw_rgba_reversed(
+            &texture.to_bytes(),
+            (texture.width(), texture.height()),
+        );
+
+        SrgbTexture2d::new(&self.display, image).map_err(Error::invalid_data)
+    }
+
+    #[inline]
+    fn add_texture(&mut self, id: usize, texture: Self::Texture) {
+        self.textures.insert(id, texture);
+    }
+
+    #[inline]
+    fn get_texture(&self, id: &usize) -> Option<&Self::Texture> {
+        self.textures.get(id)
+    }
+
+    fn render_mesh(
         &self,
         vertices: &[Vertex],
-        page: &AtlasPage,
+        texture: &Self::Texture,
         frame: &mut Self::Frame,
     ) -> Result<()> {
         let vertex_buffer = VertexBuffer::new(&self.display, vertices).map_err(Error::render)?;
         let index_buffer = NoIndices(PrimitiveType::TrianglesList);
 
         let (width, height) = frame.get_dimensions();
-        let (width, height) = (width as f32, height as f32);
-
         let perspective = [
-            [1.0 / width, 0.0, 0.0],
-            [0.0, 1.0 / height, 0.0],
+            [1.0 / width as f32, 0.0, 0.0],
+            [0.0, 1.0 / height as f32, 0.0],
             [0.0, 0.0, 1.0],
         ];
-
-        let texture = self.textures.get(&page.id()).unwrap();
 
         let uniforms = uniform! {
             u_perspective: perspective,

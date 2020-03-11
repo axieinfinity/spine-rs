@@ -19,6 +19,6 @@ impl<'a> Slot<'a> {
 
     pub fn attachment(&self) -> Option<Attachment<'a>> {
         let pointer = unsafe { self.0.as_ref().attachment };
-        Attachment::from_pointer(pointer).ok()
+        Attachment::new(pointer).ok()
     }
 }

@@ -10,7 +10,7 @@ pub struct SkeletonJson {
 }
 
 impl SkeletonJson {
-    pub fn from_atlas(atlas: &Rc<Atlas>) -> Self {
+    pub fn new(atlas: &Rc<Atlas>) -> Self {
         let pointer = unsafe { spSkeletonJson_create(atlas.pointer.as_ptr()) };
 
         Self {
