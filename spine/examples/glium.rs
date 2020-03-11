@@ -46,7 +46,7 @@ fn main() {
 
     let mut skeleton = Skeleton::new(&skeleton_data);
 
-    skeleton.set_y(-240.0);
+    skeleton.set_y(-280.0);
 
     let mut animation_state = AnimationState::new(&animation_state_data);
 

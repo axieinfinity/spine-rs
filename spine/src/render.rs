@@ -10,8 +10,8 @@ const QUAD_INDICES: [u16; 6] = [0, 1, 2, 2, 3, 0];
 #[allow(non_snake_case)]
 #[derive(Clone, Copy, Debug)]
 pub struct Vertex {
-    pub a_position: [f32; 2],
-    pub a_texCoords: [f32; 2],
+    pub in_position: [f32; 2],
+    pub in_texture_coords: [f32; 2],
 }
 
 pub trait Renderer {
@@ -72,8 +72,8 @@ pub trait Renderer {
                 let index = (*index as usize) << 1;
 
                 vertices.push(Vertex {
-                    a_position: [world_vertices[index], world_vertices[index + 1]],
-                    a_texCoords: [uvs[index], -uvs[index + 1]],
+                    in_position: [world_vertices[index], world_vertices[index + 1]],
+                    in_texture_coords: [uvs[index], -uvs[index + 1]],
                 })
             }
 

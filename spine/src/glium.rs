@@ -15,7 +15,7 @@ use super::{
     result::Result,
 };
 
-implement_vertex!(Vertex, a_position, a_texCoords);
+implement_vertex!(Vertex, in_position, in_texture_coords);
 
 pub struct GliumRenderer<'a> {
     display: Display,
@@ -26,8 +26,8 @@ pub struct GliumRenderer<'a> {
 
 impl<'a> GliumRenderer<'a> {
     pub fn new(display: Display) -> Result<Self> {
-        let vertex_shader = include_str!("./shader/spine.vert");
-        let fragment_shader = include_str!("./shader/spine.frag");
+        let vertex_shader = include_str!("./shaders/spine.vert");
+        let fragment_shader = include_str!("./shaders/spine.frag");
 
         let program = Program::from_source(&display, vertex_shader, fragment_shader, None)
             .map_err(Error::render)?;
@@ -85,7 +85,7 @@ impl<'a> Renderer for GliumRenderer<'a> {
         let perspective = [
             [1.0 / width, 0.0, 0.0],
             [0.0, 1.0 / height, 0.0],
-            [0.0, -0.2, 1.0],
+            [0.0, 0.0, 1.0],
         ];
 
         let texture = self.textures.get(&page.id()).unwrap();
