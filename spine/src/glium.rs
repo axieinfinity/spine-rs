@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::collections::HashMap;
 
 use glium::{
     implement_vertex,
@@ -6,9 +6,10 @@ use glium::{
     texture::{RawImage2d, SrgbTexture2d},
     uniform, Blend, Display, DrawParameters, Frame, Program, Surface, VertexBuffer,
 };
-use image::{DynamicImage, GenericImageView};
+use image::GenericImageView;
 
-use crate::{
+use super::{
+    atlas::{Atlas, AtlasPage},
     error::Error,
     render::{Renderer, Vertex},
     result::Result,
@@ -20,7 +21,7 @@ pub struct GliumRenderer<'a> {
     display: Display,
     program: Program,
     draw_parameters: DrawParameters<'a>,
-    texture: RefCell<Option<SrgbTexture2d>>,
+    textures: HashMap<usize, SrgbTexture2d>,
 }
 
 impl<'a> GliumRenderer<'a> {
@@ -40,13 +41,29 @@ impl<'a> GliumRenderer<'a> {
             display,
             program,
             draw_parameters,
-            texture: RefCell::default(),
+            textures: HashMap::new(),
         })
     }
 
     #[inline]
     pub fn display(&self) -> &Display {
         &self.display
+    }
+
+    #[inline]
+    pub fn build_textures(&mut self, atlas: &Atlas) -> Result<()> {
+        let Self {
+            display, textures, ..
+        } = self;
+
+        atlas.build_textures(textures, |texture| {
+            let image = RawImage2d::from_raw_rgba_reversed(
+                &texture.to_bytes(),
+                (texture.width(), texture.height()),
+            );
+
+            SrgbTexture2d::new(display, image).map_err(Error::render)
+        })
     }
 }
 
@@ -56,7 +73,7 @@ impl<'a> Renderer for GliumRenderer<'a> {
     fn render_in_frame(
         &self,
         vertices: &[Vertex],
-        texture: &DynamicImage,
+        page: &AtlasPage,
         frame: &mut Self::Frame,
     ) -> Result<()> {
         let vertex_buffer = VertexBuffer::new(&self.display, vertices).map_err(Error::render)?;
@@ -71,19 +88,7 @@ impl<'a> Renderer for GliumRenderer<'a> {
             [0.0, -0.2, 1.0],
         ];
 
-        let mut texture_wrapper = self.texture.borrow_mut();
-
-        if texture_wrapper.is_none() {
-            let image = RawImage2d::from_raw_rgba_reversed(
-                &texture.to_bytes(),
-                (texture.width(), texture.height()),
-            );
-
-            *texture_wrapper =
-                Some(SrgbTexture2d::new(&self.display, image).map_err(Error::render)?);
-        }
-
-        let texture = texture_wrapper.as_ref().unwrap();
+        let texture = self.textures.get(&page.id()).unwrap();
 
         let uniforms = uniform! {
             u_perspective: perspective,

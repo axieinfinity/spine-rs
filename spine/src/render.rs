@@ -1,6 +1,4 @@
-use image::DynamicImage;
-
-use super::{attachment::Attachment, result::Result, skeleton::Skeleton};
+use super::{atlas::AtlasPage, attachment::Attachment, result::Result, skeleton::Skeleton};
 
 const MAX_VERTICES_PER_ATTACHMENT: usize = 2048;
 
@@ -22,7 +20,7 @@ pub trait Renderer {
     fn render_in_frame(
         &self,
         vertices: &[Vertex],
-        texture: &DynamicImage,
+        page: &AtlasPage,
         frame: &mut Self::Frame,
     ) -> Result<()>;
 
@@ -79,9 +77,7 @@ pub trait Renderer {
                 })
             }
 
-            let texture = page.texture();
-
-            self.render_in_frame(&vertices, texture, frame)?;
+            self.render_in_frame(&vertices, &page, frame)?;
         }
 
         Ok(())

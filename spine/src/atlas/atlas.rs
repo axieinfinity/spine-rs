@@ -1,4 +1,4 @@
-use std::{ffi::CString, marker::PhantomData, ptr::NonNull, rc::Rc};
+use std::{collections::HashMap, ffi::CString, marker::PhantomData, ptr::NonNull, rc::Rc};
 
 use spine_sys::{spAtlas, spAtlasPage, spAtlas_createFromFile, spAtlas_dispose};
 
@@ -8,6 +8,7 @@ use crate::{
 };
 
 use super::page::AtlasPage;
+use image::DynamicImage;
 
 #[repr(transparent)]
 pub struct Atlas {
@@ -27,6 +28,18 @@ impl Atlas {
     pub fn pages(&self) -> PageIter {
         let page = unsafe { self.pointer.as_ref().pages };
         PageIter::new(page)
+    }
+
+    pub fn build_textures<T, F>(&self, cache: &mut HashMap<usize, T>, build: F) -> Result<()>
+    where
+        F: Fn(&DynamicImage) -> Result<T>,
+    {
+        for page in self.pages() {
+            let texture = build(page.texture())?;
+            cache.insert(page.id(), texture);
+        }
+
+        Ok(())
     }
 }
 

@@ -29,9 +29,11 @@ fn main() {
 
     let display = glium::Display::new(window_builder, context_builder, &event_loop).unwrap();
 
-    let renderer = GliumRenderer::new(display).unwrap();
+    let mut renderer = GliumRenderer::new(display).unwrap();
 
     let atlas = Atlas::from_file(asset_dir.join("axie.atlas").to_str().unwrap()).unwrap();
+
+    renderer.build_textures(&atlas).unwrap();
 
     let mut skeleton_json = SkeletonJson::from_atlas(&atlas);
     skeleton_json.set_scale(1.0);

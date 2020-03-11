@@ -10,6 +10,10 @@ pub struct AtlasPage<'atlas> {
 }
 
 impl<'a> AtlasPage<'a> {
+    pub fn id(&self) -> usize {
+        self.pointer.as_ptr() as usize
+    }
+
     pub fn texture(&self) -> &DynamicImage {
         unsafe {
             let pointer = self.pointer.as_ref().rendererObject as *mut DynamicImage;
