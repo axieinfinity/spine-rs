@@ -25,8 +25,8 @@ pub struct GliumRenderer<'a> {
 
 impl<'a> GliumRenderer<'a> {
     pub fn new(display: &'a Display) -> Result<Self> {
-        let vertex_shader = include_str!("../shader/spine.vert");
-        let fragment_shader = include_str!("../shader/spine.frag");
+        let vertex_shader = include_str!("./shader/spine.vert");
+        let fragment_shader = include_str!("./shader/spine.frag");
 
         let program = Program::from_source(display, vertex_shader, fragment_shader, None)
             .map_err(Error::render)?;
