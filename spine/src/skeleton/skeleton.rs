@@ -1,6 +1,8 @@
 use std::{marker::PhantomData, ptr::NonNull, slice};
 
-use spine_sys::{spSkeleton, spSkeleton_create, spSkeleton_dispose};
+use spine_sys::{
+    spSkeleton, spSkeleton_create, spSkeleton_dispose, spSkeleton_updateWorldTransform,
+};
 
 use crate::slot::Slot;
 
@@ -21,13 +23,13 @@ impl<'a> Skeleton<'a> {
 }
 
 macro_rules! impl_slots {
-    ($method: ident, $c_slots:ident) => {
-        pub fn $method(&self) -> &[Slot] {
+    ($method:ident, $from_raw_parts_mut:ident, $slots:ident $(,$mut:tt)*) => {
+        pub fn $method(&$($mut)* self) -> &$($mut)* [Slot] {
             unsafe {
                 let skeleton = self.0.as_ref();
 
-                slice::from_raw_parts(
-                    skeleton.$c_slots as *const Slot,
+                slice::$from_raw_parts_mut(
+                    skeleton.$slots as *mut Slot,
                     skeleton.slotsCount as usize,
                 )
             }
@@ -36,8 +38,14 @@ macro_rules! impl_slots {
 }
 
 impl<'a> Skeleton<'a> {
-    impl_slots!(slots, slots);
-    impl_slots!(slots_ordered, drawOrder);
+    impl_slots!(slots, from_raw_parts, slots);
+    // impl_slots!(slots_mut, from_raw_parts_mut, slots, mut);
+    impl_slots!(slots_ordered, from_raw_parts, drawOrder);
+    // impl_slots!(slots_ordered_mut, from_raw_parts_mut, drawOrder, mut);
+
+    pub fn update_world_transform(&mut self) {
+        unsafe { spSkeleton_updateWorldTransform(self.0.as_ptr()) }
+    }
 }
 
 impl<'a> Drop for Skeleton<'a> {

@@ -1,6 +1,7 @@
 pub mod animation;
 pub mod atlas;
 pub mod attachment;
+pub mod bone;
 pub mod r#impl;
 pub mod skeleton;
 pub mod slot;
