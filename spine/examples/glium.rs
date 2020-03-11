@@ -1,4 +1,7 @@
-use std::time::{Duration, Instant};
+use std::{
+    path::Path,
+    time::{Duration, Instant},
+};
 
 use glium::{glutin, Surface};
 use spine::{
@@ -15,6 +18,8 @@ enum Action {
 }
 
 fn main() {
+    let asset_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/axie");
+
     let window_size = glutin::dpi::LogicalSize::new(640.0, 480.0);
     let window_builder = glutin::window::WindowBuilder::new().with_inner_size(window_size);
 
@@ -26,24 +31,25 @@ fn main() {
 
     let renderer = GliumRenderer::new(display).unwrap();
 
-    let atlas = Atlas::from_file("/Users/trung/Downloads/fuzzy.atlas").unwrap();
+    let atlas = Atlas::from_file(asset_dir.join("axie.atlas").to_str().unwrap()).unwrap();
 
     let mut skeleton_json = SkeletonJson::from_atlas(&atlas);
     skeleton_json.set_scale(1.0);
 
     let skeleton_data =
-        SkeletonData::from_json_file("/Users/trung/Downloads/fuzzy.json", skeleton_json).unwrap();
+        SkeletonData::from_json_file(asset_dir.join("axie.json").to_str().unwrap(), skeleton_json)
+            .unwrap();
 
     let animation_state_data = AnimationStateData::new(&skeleton_data);
 
     let mut skeleton = Skeleton::new(&skeleton_data);
 
-    skeleton.set_y(-160.0);
+    skeleton.set_y(-240.0);
 
     let mut animation_state = AnimationState::new(&animation_state_data);
 
     animation_state
-        .set_animation_by_name(0, "action/idle/normal", true)
+        .set_animation_by_name(0, "action/idle", true)
         .unwrap();
 
     let mut last_time = Instant::now();

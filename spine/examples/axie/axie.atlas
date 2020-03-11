@@ -1,0 +1,160 @@
+
+axie.png
+size: 1444,448
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+back
+  rotate: false
+  xy: 593, 189
+  size: 240, 257
+  orig: 240, 257
+  offset: 0, 0
+  index: -1
+body
+  rotate: false
+  xy: 2, 2
+  size: 589, 444
+  orig: 589, 444
+  offset: 0, 0
+  index: -1
+body-bell
+  rotate: false
+  xy: 1276, 74
+  size: 87, 83
+  orig: 87, 83
+  offset: 0, 0
+  index: -1
+ear-left
+  rotate: false
+  xy: 969, 14
+  size: 88, 106
+  orig: 90, 108
+  offset: 1, 1
+  index: -1
+ear-right
+  rotate: false
+  xy: 1059, 14
+  size: 88, 106
+  orig: 90, 108
+  offset: 1, 1
+  index: -1
+eyes
+  rotate: false
+  xy: 1184, 223
+  size: 172, 78
+  orig: 172, 78
+  offset: 0, 0
+  index: -1
+eyes-angry
+  rotate: false
+  xy: 1184, 159
+  size: 174, 62
+  orig: 174, 62
+  offset: 0, 0
+  index: -1
+eyes-shut
+  rotate: false
+  xy: 593, 4
+  size: 179, 29
+  orig: 179, 29
+  offset: 0, 0
+  index: -1
+horn
+  rotate: false
+  xy: 1019, 122
+  size: 163, 168
+  orig: 163, 168
+  offset: 0, 0
+  index: -1
+leg-back-left
+  rotate: true
+  xy: 1308, 3
+  size: 69, 68
+  orig: 69, 68
+  offset: 0, 0
+  index: -1
+leg-back-right
+  rotate: false
+  xy: 1365, 79
+  size: 73, 86
+  orig: 73, 86
+  offset: 0, 0
+  index: -1
+leg-front-left
+  rotate: true
+  xy: 1236, 3
+  size: 69, 70
+  orig: 69, 70
+  offset: 0, 0
+  index: -1
+leg-front-right
+  rotate: true
+  xy: 1149, 6
+  size: 73, 85
+  orig: 73, 85
+  offset: 0, 0
+  index: -1
+mouth
+  rotate: true
+  xy: 1184, 81
+  size: 76, 90
+  orig: 78, 92
+  offset: 1, 1
+  index: -1
+mouth-bite
+  rotate: true
+  xy: 1184, 81
+  size: 76, 90
+  orig: 78, 92
+  offset: 1, 1
+  index: -1
+mouth-eat
+  rotate: true
+  xy: 1375, 289
+  size: 157, 53
+  orig: 157, 53
+  offset: 0, 0
+  index: -1
+mouth-open
+  rotate: false
+  xy: 1360, 167
+  size: 82, 120
+  orig: 84, 122
+  offset: 1, 1
+  index: -1
+shadow
+  rotate: false
+  xy: 835, 292
+  size: 286, 154
+  orig: 286, 154
+  offset: 0, 0
+  index: -1
+tail
+  rotate: false
+  xy: 1123, 303
+  size: 250, 143
+  orig: 250, 143
+  offset: 0, 0
+  index: -1
+tail-glow-01
+  rotate: true
+  xy: 593, 35
+  size: 152, 216
+  orig: 171, 231
+  offset: 12, 7
+  index: -1
+tail-glow-02
+  rotate: true
+  xy: 835, 150
+  size: 140, 182
+  orig: 157, 196
+  offset: 10, 7
+  index: -1
+tail-glow-03
+  rotate: true
+  xy: 811, 9
+  size: 139, 156
+  orig: 156, 171
+  offset: 10, 7
+  index: -1
