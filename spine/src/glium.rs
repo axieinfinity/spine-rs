@@ -1,7 +1,9 @@
+use std::cell::RefCell;
+
 use glium::{
     implement_vertex,
     index::{NoIndices, PrimitiveType},
-    texture::SrgbTexture2d,
+    texture::{RawImage2d, SrgbTexture2d},
     uniform, Blend, Display, DrawParameters, Frame, Program, Surface, VertexBuffer,
 };
 use image::{DynamicImage, GenericImageView};
@@ -11,7 +13,6 @@ use crate::{
     render::{Renderer, Vertex},
     result::Result,
 };
-use glium::texture::RawImage2d;
 
 implement_vertex!(Vertex, a_position, a_texCoords);
 
@@ -19,6 +20,7 @@ pub struct GliumRenderer<'a> {
     display: &'a Display,
     program: Program,
     draw_parameters: DrawParameters<'a>,
+    texture: RefCell<Option<SrgbTexture2d>>,
 }
 
 impl<'a> GliumRenderer<'a> {
@@ -38,6 +40,7 @@ impl<'a> GliumRenderer<'a> {
             display,
             program,
             draw_parameters,
+            texture: RefCell::default(),
         })
     }
 }
@@ -59,18 +62,32 @@ impl<'a> Renderer for GliumRenderer<'a> {
         let vertex_buffer = VertexBuffer::new(self.display, vertices).map_err(Error::render)?;
         let index_buffer = NoIndices(PrimitiveType::TrianglesList);
 
-        let perspective = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]];
+        let (width, height) = frame.get_dimensions();
+        let (width, height) = (width as f32, height as f32);
 
-        let image = RawImage2d::from_raw_rgba_reversed(
-            &texture.to_bytes(),
-            (texture.width(), texture.height()),
-        );
+        let perspective = [
+            [1.0 / width, 0.0, 0.0],
+            [0.0, 1.0 / height, 0.0],
+            [0.0, -0.2, 1.0],
+        ];
 
-        let texture = SrgbTexture2d::new(self.display, image).map_err(Error::render)?;
+        let mut texture_wrapper = self.texture.borrow_mut();
+
+        if texture_wrapper.is_none() {
+            let image = RawImage2d::from_raw_rgba_reversed(
+                &texture.to_bytes(),
+                (texture.width(), texture.height()),
+            );
+
+            *texture_wrapper =
+                Some(SrgbTexture2d::new(self.display, image).map_err(Error::render)?);
+        }
+
+        let texture = texture_wrapper.as_ref().unwrap();
 
         let uniforms = uniform! {
-            perspective: perspective,
-            texture: &texture,
+            u_perspective: perspective,
+            u_texture: texture,
         };
 
         frame
