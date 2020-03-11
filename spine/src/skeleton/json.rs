@@ -1,30 +1,32 @@
-use std::{marker::PhantomData, ptr::NonNull};
+use std::{ptr::NonNull, rc::Rc};
 
 use spine_sys::{spSkeletonJson, spSkeletonJson_create, spSkeletonJson_dispose};
 
 use crate::atlas::Atlas;
 
-#[repr(transparent)]
-pub struct SkeletonJson<'atlas>(
-    pub(crate) NonNull<spSkeletonJson>,
-    pub(crate) PhantomData<&'atlas ()>,
-);
+pub struct SkeletonJson {
+    pub(crate) pointer: NonNull<spSkeletonJson>,
+    pub(crate) _atlas: Rc<Atlas>,
+}
 
-impl<'a> SkeletonJson<'a> {
-    pub fn from_atlas(atlas: &'a Atlas) -> Self {
-        let pointer = unsafe { spSkeletonJson_create(atlas.0.as_ptr()) };
-        let pointer = NonNull::new(pointer).unwrap();
-        Self(pointer, PhantomData)
+impl SkeletonJson {
+    pub fn from_atlas(atlas: &Rc<Atlas>) -> Self {
+        let pointer = unsafe { spSkeletonJson_create(atlas.pointer.as_ptr()) };
+
+        Self {
+            pointer: NonNull::new(pointer).unwrap(),
+            _atlas: atlas.clone(),
+        }
     }
 
     pub fn set_scale(&mut self, scale: f32) -> &mut Self {
-        unsafe { self.0.as_mut().scale = scale }
+        unsafe { self.pointer.as_mut().scale = scale }
         self
     }
 }
 
-impl<'a> Drop for SkeletonJson<'a> {
+impl Drop for SkeletonJson {
     fn drop(&mut self) {
-        unsafe { spSkeletonJson_dispose(self.0.as_ptr()) }
+        unsafe { spSkeletonJson_dispose(self.pointer.as_ptr()) }
     }
 }

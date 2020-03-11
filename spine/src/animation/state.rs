@@ -1,4 +1,4 @@
-use std::{ffi::CString, marker::PhantomData, os::raw::c_int, ptr::NonNull};
+use std::{ffi::CString, os::raw::c_int, ptr::NonNull, rc::Rc};
 
 use spine_sys::{
     spAnimationState, spAnimationState_apply, spAnimationState_create, spAnimationState_dispose,
@@ -9,17 +9,19 @@ use crate::{result::Result, skeleton::Skeleton};
 
 use super::state_data::AnimationStateData;
 
-#[repr(transparent)]
-pub struct AnimationState<'anim_state_data>(
-    pub(crate) NonNull<spAnimationState>,
-    pub(crate) PhantomData<&'anim_state_data ()>,
-);
+pub struct AnimationState {
+    pub(crate) pointer: NonNull<spAnimationState>,
+    pub(crate) _animation_state_data: Rc<AnimationStateData>,
+}
 
-impl<'a> AnimationState<'a> {
-    pub fn new(animation_state_data: &'a AnimationStateData) -> Self {
-        let pointer = unsafe { spAnimationState_create(animation_state_data.0.as_ptr()) };
-        let pointer = NonNull::new(pointer).unwrap();
-        AnimationState(pointer, PhantomData)
+impl AnimationState {
+    pub fn new(animation_state_data: &Rc<AnimationStateData>) -> Self {
+        let pointer = unsafe { spAnimationState_create(animation_state_data.pointer.as_ptr()) };
+
+        AnimationState {
+            pointer: NonNull::new(pointer).unwrap(),
+            _animation_state_data: animation_state_data.clone(),
+        }
     }
 
     pub fn set_animation_by_name(
@@ -32,7 +34,7 @@ impl<'a> AnimationState<'a> {
 
         let _track_entry = unsafe {
             spAnimationState_setAnimationByName(
-                self.0.as_ptr(),
+                self.pointer.as_ptr(),
                 track_index as c_int,
                 animation_name.as_ptr(),
                 r#loop as c_int,
@@ -43,16 +45,17 @@ impl<'a> AnimationState<'a> {
     }
 
     pub fn update(&mut self, delta: f32) {
-        unsafe { spAnimationState_update(self.0.as_ptr(), delta) }
+        unsafe { spAnimationState_update(self.pointer.as_ptr(), delta) }
     }
 
     pub fn apply(&mut self, skeleton: &mut Skeleton) {
-        let _result = unsafe { spAnimationState_apply(self.0.as_ptr(), skeleton.0.as_ptr()) };
+        let _result =
+            unsafe { spAnimationState_apply(self.pointer.as_ptr(), skeleton.pointer.as_ptr()) };
     }
 }
 
-impl<'a> Drop for AnimationState<'a> {
+impl Drop for AnimationState {
     fn drop(&mut self) {
-        unsafe { spAnimationState_dispose(self.0.as_ptr()) }
+        unsafe { spAnimationState_dispose(self.pointer.as_ptr()) }
     }
 }

@@ -17,18 +17,18 @@ use crate::{
 implement_vertex!(Vertex, a_position, a_texCoords);
 
 pub struct GliumRenderer<'a> {
-    display: &'a Display,
+    display: Display,
     program: Program,
     draw_parameters: DrawParameters<'a>,
     texture: RefCell<Option<SrgbTexture2d>>,
 }
 
 impl<'a> GliumRenderer<'a> {
-    pub fn new(display: &'a Display) -> Result<Self> {
+    pub fn new(display: Display) -> Result<Self> {
         let vertex_shader = include_str!("./shader/spine.vert");
         let fragment_shader = include_str!("./shader/spine.frag");
 
-        let program = Program::from_source(display, vertex_shader, fragment_shader, None)
+        let program = Program::from_source(&display, vertex_shader, fragment_shader, None)
             .map_err(Error::render)?;
 
         let draw_parameters = DrawParameters {
@@ -43,23 +43,23 @@ impl<'a> GliumRenderer<'a> {
             texture: RefCell::default(),
         })
     }
+
+    #[inline]
+    pub fn display(&self) -> &Display {
+        &self.display
+    }
 }
 
 impl<'a> Renderer for GliumRenderer<'a> {
     type Frame = Frame;
 
-    #[inline]
-    fn prepare_frame(&self) -> Self::Frame {
-        self.display.draw()
-    }
-
     fn render_in_frame(
         &self,
-        frame: &mut Self::Frame,
         vertices: &[Vertex],
         texture: &DynamicImage,
+        frame: &mut Self::Frame,
     ) -> Result<()> {
-        let vertex_buffer = VertexBuffer::new(self.display, vertices).map_err(Error::render)?;
+        let vertex_buffer = VertexBuffer::new(&self.display, vertices).map_err(Error::render)?;
         let index_buffer = NoIndices(PrimitiveType::TrianglesList);
 
         let (width, height) = frame.get_dimensions();
@@ -80,7 +80,7 @@ impl<'a> Renderer for GliumRenderer<'a> {
             );
 
             *texture_wrapper =
-                Some(SrgbTexture2d::new(self.display, image).map_err(Error::render)?);
+                Some(SrgbTexture2d::new(&self.display, image).map_err(Error::render)?);
         }
 
         let texture = texture_wrapper.as_ref().unwrap();
@@ -99,10 +99,5 @@ impl<'a> Renderer for GliumRenderer<'a> {
                 &self.draw_parameters,
             )
             .map_err(Error::render)
-    }
-
-    #[inline]
-    fn finish_frame(&self, frame: Self::Frame) -> Result<()> {
-        frame.finish().map_err(Error::render)
     }
 }

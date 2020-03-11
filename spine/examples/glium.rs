@@ -1,6 +1,6 @@
 use std::time::{Duration, Instant};
 
-use glium::glutin;
+use glium::{glutin, Surface};
 use spine::{
     animation::{AnimationState, AnimationStateData},
     atlas::Atlas,
@@ -15,7 +15,7 @@ enum Action {
 }
 
 fn main() {
-    let window_size = glutin::dpi::LogicalSize::new(1024.0, 768.0);
+    let window_size = glutin::dpi::LogicalSize::new(640.0, 480.0);
     let window_builder = glutin::window::WindowBuilder::new().with_inner_size(window_size);
 
     let context_builder = glutin::ContextBuilder::new();
@@ -24,34 +24,43 @@ fn main() {
 
     let display = glium::Display::new(window_builder, context_builder, &event_loop).unwrap();
 
-    let renderer = GliumRenderer::new(&display).unwrap();
+    let renderer = GliumRenderer::new(display).unwrap();
 
     let atlas = Atlas::from_file("/Users/trung/Downloads/fuzzy.atlas").unwrap();
 
     let mut skeleton_json = SkeletonJson::from_atlas(&atlas);
-    skeleton_json.set_scale(2.0);
+    skeleton_json.set_scale(1.0);
 
     let skeleton_data =
-        SkeletonData::from_json_file("/Users/trung/Downloads/fuzzy.json", &skeleton_json).unwrap();
+        SkeletonData::from_json_file("/Users/trung/Downloads/fuzzy.json", skeleton_json).unwrap();
 
     let animation_state_data = AnimationStateData::new(&skeleton_data);
 
     let mut skeleton = Skeleton::new(&skeleton_data);
+
+    skeleton.set_y(-160.0);
+
     let mut animation_state = AnimationState::new(&animation_state_data);
 
     animation_state
         .set_animation_by_name(0, "action/idle/normal", true)
         .unwrap();
 
-    animation_state.update(1.0 / 60.0);
-    animation_state.apply(&mut skeleton);
-    skeleton.update_world_transform();
-
-    renderer.render(&mut skeleton).unwrap();
-
+    let mut last_time = Instant::now();
     let mut next_frame_time = Instant::now();
 
     event_loop.run(move |event, _, control_flow| {
+        animation_state.update(last_time.elapsed().as_secs_f32());
+        last_time = Instant::now();
+
+        animation_state.apply(&mut skeleton);
+        skeleton.update_world_transform();
+
+        let mut frame = renderer.display().draw();
+        frame.clear_color(0.0, 0.0, 0.0, 0.0);
+        renderer.render(&mut skeleton, &mut frame).unwrap();
+        frame.finish().unwrap();
+
         let action = match event {
             glutin::event::Event::WindowEvent { event, .. } => match event {
                 glutin::event::WindowEvent::CloseRequested => Action::Stop,

@@ -1,4 +1,4 @@
-use std::{ffi::CString, marker::PhantomData, ptr::NonNull};
+use std::{ffi::CString, marker::PhantomData, ptr::NonNull, rc::Rc};
 
 use spine_sys::{spAtlas, spAtlasPage, spAtlas_createFromFile, spAtlas_dispose};
 
@@ -10,31 +10,35 @@ use crate::{
 use super::page::AtlasPage;
 
 #[repr(transparent)]
-pub struct Atlas(pub(crate) NonNull<spAtlas>);
+pub struct Atlas {
+    pub(crate) pointer: NonNull<spAtlas>,
+}
 
 impl Atlas {
-    pub fn from_file(path: &str) -> Result<Self> {
+    pub fn from_file(path: &str) -> Result<Rc<Self>> {
         let path = CString::new(path)?;
         let pointer = unsafe { spAtlas_createFromFile(path.as_ptr(), std::ptr::null_mut()) };
-        let pointer = NonNull::new(pointer).ok_or(Error::invalid_data(NullPointerError))?;
-        Ok(Self(pointer))
+
+        Ok(Rc::new(Self {
+            pointer: NonNull::new(pointer).ok_or(Error::invalid_data(NullPointerError))?,
+        }))
     }
 
     pub fn pages(&self) -> PageIter {
-        let page = unsafe { self.0.as_ref().pages };
+        let page = unsafe { self.pointer.as_ref().pages };
         PageIter::new(page)
     }
 }
 
 impl Drop for Atlas {
     fn drop(&mut self) {
-        unsafe { spAtlas_dispose(self.0.as_ptr()) }
+        unsafe { spAtlas_dispose(self.pointer.as_ptr()) }
     }
 }
 
-pub struct PageIter<'atlas> {
+pub struct PageIter<'a> {
     page: *mut spAtlasPage,
-    _marker: PhantomData<&'atlas ()>,
+    _marker: PhantomData<&'a ()>,
 }
 
 impl<'a> PageIter<'a> {

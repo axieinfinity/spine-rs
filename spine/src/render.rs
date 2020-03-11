@@ -19,19 +19,14 @@ pub struct Vertex {
 pub trait Renderer {
     type Frame;
 
-    fn prepare_frame(&self) -> Self::Frame;
-
     fn render_in_frame(
         &self,
-        frame: &mut Self::Frame,
         vertices: &[Vertex],
         texture: &DynamicImage,
+        frame: &mut Self::Frame,
     ) -> Result<()>;
 
-    fn finish_frame(&self, frame: Self::Frame) -> Result<()>;
-
-    fn render(&self, skeleton: &mut Skeleton) -> Result<()> {
-        let mut frame = self.prepare_frame();
+    fn render(&self, skeleton: &mut Skeleton, frame: &mut Self::Frame) -> Result<()> {
         let mut world_vertices_positions = vec![0.0; MAX_VERTICES_PER_ATTACHMENT];
 
         for slot in skeleton.slots_ordered() {
@@ -89,9 +84,9 @@ pub trait Renderer {
 
             let texture = page.texture();
 
-            self.render_in_frame(&mut frame, &vertices, texture)?;
+            self.render_in_frame(&vertices, texture, frame)?;
         }
 
-        self.finish_frame(frame)
+        Ok(())
     }
 }

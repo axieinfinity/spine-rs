@@ -1,25 +1,27 @@
-use std::{marker::PhantomData, ptr::NonNull};
+use std::{ptr::NonNull, rc::Rc};
 
 use spine_sys::{spAnimationStateData, spAnimationStateData_create, spAnimationStateData_dispose};
 
 use crate::skeleton::SkeletonData;
 
-#[repr(transparent)]
-pub struct AnimationStateData<'skel_data>(
-    pub(crate) NonNull<spAnimationStateData>,
-    pub(crate) PhantomData<&'skel_data ()>,
-);
+pub struct AnimationStateData {
+    pub(crate) pointer: NonNull<spAnimationStateData>,
+    pub(crate) _skeleton_data: Rc<SkeletonData>,
+}
 
-impl<'a> AnimationStateData<'a> {
-    pub fn new(skeleton_data: &'a SkeletonData) -> Self {
-        let pointer = unsafe { spAnimationStateData_create(skeleton_data.0.as_ptr()) };
-        let pointer = NonNull::new(pointer).unwrap();
-        AnimationStateData(pointer, PhantomData)
+impl AnimationStateData {
+    pub fn new(skeleton_data: &Rc<SkeletonData>) -> Rc<Self> {
+        let pointer = unsafe { spAnimationStateData_create(skeleton_data.pointer.as_ptr()) };
+
+        Rc::new(AnimationStateData {
+            pointer: NonNull::new(pointer).unwrap(),
+            _skeleton_data: skeleton_data.clone(),
+        })
     }
 }
 
-impl<'a> Drop for AnimationStateData<'a> {
+impl Drop for AnimationStateData {
     fn drop(&mut self) {
-        unsafe { spAnimationStateData_dispose(self.0.as_ptr()) }
+        unsafe { spAnimationStateData_dispose(self.pointer.as_ptr()) }
     }
 }
