@@ -9,13 +9,13 @@ use spine_sys::{
     spVertexAttachment_computeWorldVertices,
 };
 
-use super::{
+use crate::{
     atlas::AtlasRegion,
-    bone::Bone,
     error::{Error, NullPointerError},
     result::Result,
-    slot::Slot,
 };
+
+use super::{bone::Bone, slot::Slot};
 
 pub enum Attachment<'skel> {
     Region(RegionAttachment<'skel>),

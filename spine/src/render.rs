@@ -2,7 +2,10 @@ use image::DynamicImage;
 use std::rc::Rc;
 
 use super::{
-    atlas::Atlas, attachment::Attachment, error::Error, result::Result, skeleton::Skeleton,
+    atlas::Atlas,
+    error::Error,
+    result::Result,
+    skeleton::{Attachment, Skeleton},
 };
 
 const MAX_VERTICES_PER_ATTACHMENT: usize = 2048;

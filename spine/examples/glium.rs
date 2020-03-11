@@ -6,7 +6,7 @@ use std::{
 use glium::{glutin, Surface};
 use spine::{
     animation::{AnimationState, AnimationStateData},
-    glium::GliumRenderer,
+    backend::glium::GliumRenderer,
     skeleton::{Skeleton, SkeletonData, SkeletonJson},
     Renderer,
 };

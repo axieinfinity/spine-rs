@@ -1,13 +1,8 @@
 pub mod animation;
 pub mod atlas;
-pub mod attachment;
-pub mod bone;
+pub mod backend;
 pub mod r#impl;
 pub mod skeleton;
-pub mod slot;
-
-#[cfg(feature = "glium")]
-pub mod glium;
 
 mod error;
 mod render;
@@ -20,5 +15,8 @@ pub use error::*;
 pub use render::*;
 pub use result::*;
 
-#[doc(hidden)]
-pub use spine_sys;
+pub use image;
+pub use spine_sys as sys;
+
+#[cfg(feature = "glium")]
+pub use glium;

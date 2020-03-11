@@ -8,7 +8,7 @@ use glium::{
 };
 use image::{DynamicImage, GenericImageView};
 
-use super::{
+use crate::{
     error::Error,
     render::{Renderer, Vertex},
     result::Result,
@@ -25,8 +25,8 @@ pub struct GliumRenderer<'a> {
 
 impl<'a> GliumRenderer<'a> {
     pub fn new(display: Display) -> Result<Self> {
-        let vertex_shader = include_str!("./shaders/spine.vert");
-        let fragment_shader = include_str!("./shaders/spine.frag");
+        let vertex_shader = include_str!("../shaders/spine.vert");
+        let fragment_shader = include_str!("../shaders/spine.frag");
 
         let program = Program::from_source(&display, vertex_shader, fragment_shader, None)
             .map_err(Error::invalid_data)?;

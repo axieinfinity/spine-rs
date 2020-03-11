@@ -4,9 +4,7 @@ use spine_sys::{
     spSkeleton, spSkeleton_create, spSkeleton_dispose, spSkeleton_updateWorldTransform,
 };
 
-use crate::slot::Slot;
-
-use super::data::SkeletonData;
+use super::{data::SkeletonData, slot::Slot};
 
 pub struct Skeleton {
     pub(crate) pointer: NonNull<spSkeleton>,
