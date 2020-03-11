@@ -1,7 +1,11 @@
-attribute vec2 a_position;
-attribute vec2 a_texCoords;
+#version 140
+
+in vec2 a_position;
+in vec2 a_texCoords;
+
 uniform mat3 u_perspective;
-varying vec2 v_texCoords;
+
+out vec2 v_texCoords;
 
 void main() {
      v_texCoords = a_texCoords;
