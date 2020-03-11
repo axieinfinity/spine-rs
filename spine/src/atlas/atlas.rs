@@ -32,9 +32,9 @@ impl Drop for Atlas {
     }
 }
 
-pub struct PageIter<'a> {
+pub struct PageIter<'atlas> {
     page: *mut spAtlasPage,
-    _marker: PhantomData<&'a ()>,
+    _marker: PhantomData<&'atlas ()>,
 }
 
 impl<'a> PageIter<'a> {
@@ -47,12 +47,12 @@ impl<'a> PageIter<'a> {
 }
 
 impl<'a> Iterator for PageIter<'a> {
-    type Item = &'a AtlasPage;
+    type Item = AtlasPage<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
         NonNull::new(self.page).map(|pointer| unsafe {
             self.page = pointer.as_ref().next;
-            &*(pointer.as_ptr() as *mut AtlasPage)
+            AtlasPage(pointer, PhantomData)
         })
     }
 }
