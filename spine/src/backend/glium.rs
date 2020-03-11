@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use glium::{
     implement_vertex,
     index::{NoIndices, PrimitiveType},
-    texture::{RawImage2d, SrgbTexture2d},
+    texture::{CompressedSrgbTexture2d, RawImage2d},
     uniform, Blend, Display, DrawParameters, Frame, Program, Surface, VertexBuffer,
 };
 use image::{DynamicImage, GenericImageView};
@@ -20,7 +20,7 @@ pub struct GliumRenderer<'a> {
     display: Display,
     program: Program,
     draw_parameters: DrawParameters<'a>,
-    textures: HashMap<usize, SrgbTexture2d>,
+    textures: HashMap<usize, CompressedSrgbTexture2d>,
 }
 
 impl<'a> GliumRenderer<'a> {
@@ -51,7 +51,7 @@ impl<'a> GliumRenderer<'a> {
 }
 
 impl<'a> Renderer for GliumRenderer<'a> {
-    type Texture = SrgbTexture2d;
+    type Texture = CompressedSrgbTexture2d;
     type Frame = Frame;
 
     fn build_texture(&self, texture: &DynamicImage) -> Result<Self::Texture> {
@@ -60,7 +60,7 @@ impl<'a> Renderer for GliumRenderer<'a> {
             (texture.width(), texture.height()),
         );
 
-        SrgbTexture2d::new(&self.display, image).map_err(Error::invalid_data)
+        CompressedSrgbTexture2d::new(&self.display, image).map_err(Error::invalid_data)
     }
 
     #[inline]
