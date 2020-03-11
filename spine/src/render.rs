@@ -2,7 +2,7 @@ use image::DynamicImage;
 use std::rc::Rc;
 
 use super::{
-    atlas::Atlas,
+    atlas::{Atlas, AtlasPage},
     error::Error,
     result::Result,
     skeleton::{Attachment, Skeleton},
@@ -44,6 +44,23 @@ pub trait Renderer: Sized {
     ) -> Result<()>;
 
     fn render(&self, skeleton: &mut Skeleton, frame: &mut Self::Frame) -> Result<()> {
+        let mut render_mesh = |vertices: &mut Vec<Vertex>, page: &AtlasPage| -> Result<()> {
+            let texture = self
+                .get_texture(&page.id())
+                .ok_or(Error::invalid_data(format!(
+                    "texture of page named \"{}\" has not been initialized",
+                    page.name()?,
+                )))?;
+
+            self.render_mesh(&vertices, texture, frame)?;
+            vertices.clear();
+
+            Ok(())
+        };
+
+        let mut last_page: Option<AtlasPage> = None;
+        let mut vertices = Vec::new();
+
         let mut world_vertices = vec![0.0; MAX_VERTICES_PER_ATTACHMENT];
 
         for slot in skeleton.slots_ordered() {
@@ -85,7 +102,11 @@ pub trait Renderer: Sized {
                 _ => continue,
             };
 
-            let mut vertices = Vec::with_capacity(indices.len());
+            if let Some(ref last_page) = last_page {
+                if page.id() != last_page.id() {
+                    render_mesh(&mut vertices, last_page)?;
+                }
+            }
 
             for index in indices {
                 let index = (*index as usize) << 1;
@@ -96,14 +117,11 @@ pub trait Renderer: Sized {
                 })
             }
 
-            let texture = self
-                .get_texture(&page.id())
-                .ok_or(Error::invalid_data(format!(
-                    "texture of page named \"{}\" has not been initialized",
-                    page.name()?,
-                )))?;
+            last_page = Some(page);
+        }
 
-            self.render_mesh(&vertices, &texture, frame)?;
+        if let Some(ref last_page) = last_page {
+            render_mesh(&mut vertices, last_page)?;
         }
 
         Ok(())
