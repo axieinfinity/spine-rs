@@ -27,7 +27,7 @@ pub trait Renderer {
     ) -> Result<()>;
 
     fn render(&self, skeleton: &mut Skeleton, frame: &mut Self::Frame) -> Result<()> {
-        let mut world_vertices_positions = vec![0.0; MAX_VERTICES_PER_ATTACHMENT];
+        let mut world_vertices = vec![0.0; MAX_VERTICES_PER_ATTACHMENT];
 
         for slot in skeleton.slots_ordered() {
             let mut attachment = match slot.attachment() {
@@ -44,7 +44,7 @@ pub trait Renderer {
                         slot,
                         0,
                         world_vertices_len,
-                        &mut world_vertices_positions,
+                        &mut world_vertices,
                         OFFSET,
                         STRIDE,
                     );
@@ -57,7 +57,7 @@ pub trait Renderer {
 
                     region.compute_world_vertices(
                         &slot.bone(),
-                        &mut world_vertices_positions,
+                        &mut world_vertices,
                         OFFSET,
                         STRIDE,
                     );
@@ -74,10 +74,7 @@ pub trait Renderer {
                 let index = (*index as usize) << 1;
 
                 vertices.push(Vertex {
-                    a_position: [
-                        world_vertices_positions[index],
-                        world_vertices_positions[index + 1],
-                    ],
+                    a_position: [world_vertices[index], world_vertices[index + 1]],
                     a_texCoords: [uvs[index], -uvs[index + 1]],
                 })
             }

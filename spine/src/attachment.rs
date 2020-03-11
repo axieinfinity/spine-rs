@@ -56,8 +56,11 @@ impl<'a> Attachment<'a> {
 impl<'a> MeshAttachment<'a> {
     pub fn region(&self) -> AtlasRegion<'a> {
         let pointer = unsafe { self.0.as_ref().rendererObject as *mut spAtlasRegion };
-        let pointer = NonNull::new(pointer).unwrap();
-        AtlasRegion(pointer, PhantomData)
+
+        AtlasRegion {
+            pointer: NonNull::new(pointer).unwrap(),
+            _marker: PhantomData,
+        }
     }
 
     pub fn triangles(&self) -> &[u16] {
@@ -103,8 +106,11 @@ impl<'a> MeshAttachment<'a> {
 impl<'a> RegionAttachment<'a> {
     pub fn region(&self) -> AtlasRegion<'a> {
         let pointer = unsafe { self.0.as_ref().rendererObject as *mut spAtlasRegion };
-        let pointer = NonNull::new(pointer).unwrap();
-        AtlasRegion(pointer, PhantomData)
+
+        AtlasRegion {
+            pointer: NonNull::new(pointer).unwrap(),
+            _marker: PhantomData,
+        }
     }
 
     pub fn uvs(&self) -> &[f32] {

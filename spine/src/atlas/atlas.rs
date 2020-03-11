@@ -56,7 +56,11 @@ impl<'a> Iterator for PageIter<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         NonNull::new(self.page).map(|pointer| unsafe {
             self.page = pointer.as_ref().next;
-            AtlasPage(pointer, PhantomData)
+
+            AtlasPage {
+                pointer,
+                _marker: PhantomData,
+            }
         })
     }
 }
