@@ -45,7 +45,10 @@ fn main() {
 
     let mut skeleton = Skeleton::new(&skeleton_data);
 
-    skeleton.set_y(-360.0);
+    skeleton.find_slot("shadow").unwrap().set_attachment(None);
+
+    let (_, min_y, _, max_y) = skeleton.get_bounds();
+    skeleton.set_y(-(max_y - min_y) / 2f32);
 
     let mut animation_state = AnimationState::new(&animation_state_data);
 
@@ -64,7 +67,7 @@ fn main() {
         skeleton.update_world_transform();
 
         let mut frame = renderer.display().draw();
-        frame.clear_color(0.0, 0.0, 0.0, 0.0);
+        frame.clear_color(1.0, 1.0, 1.0, 1.0);
         renderer.render(&mut skeleton, &mut frame).unwrap();
         frame.finish().unwrap();
 
