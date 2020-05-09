@@ -1,5 +1,6 @@
+use std::{path::Path, rc::Rc};
+
 use image::DynamicImage;
-use std::rc::Rc;
 
 use super::{atlas::Atlas, error::Error, geometry::Vertex, result::Result, skeleton::Skeleton};
 
@@ -11,7 +12,7 @@ pub trait Renderer: Sized {
     fn add_texture(&mut self, id: usize, texture: Self::Texture);
     fn get_texture(&self, id: &usize) -> Option<&Self::Texture>;
 
-    fn new_atlas(&mut self, path: &str) -> Result<Rc<Atlas>> {
+    fn new_atlas(&mut self, path: impl AsRef<Path>) -> Result<Rc<Atlas>> {
         let atlas = Atlas::new(path)?;
         atlas.build_textures(self)?;
         Ok(atlas)

@@ -1067,6 +1067,7 @@ version = "0.1.0"
 dependencies = [
  "glium 0.26.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "image 0.23.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "spine-sys 0.1.0",
 ]
 

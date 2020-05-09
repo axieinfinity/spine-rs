@@ -27,6 +27,9 @@ image = "0.23.0"
 glium = { version = "0.26.0", optional = true }
 spine-sys = { path = "../spine-sys" }
 
+[dev-dependencies]
+lazy_static = "1.4.0"
+
 [[example]]
 name = "glium"
 required-features = ["glium"]

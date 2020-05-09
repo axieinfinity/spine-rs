@@ -1,4 +1,4 @@
-use std::{ffi::CString, marker::PhantomData, ptr::NonNull, rc::Rc};
+use std::{marker::PhantomData, path::Path, ptr::NonNull, rc::Rc};
 
 use spine_sys::{spAtlas, spAtlasPage, spAtlas_createFromFile, spAtlas_dispose};
 
@@ -6,6 +6,7 @@ use crate::{
     error::{Error, NullPointerError},
     render::Renderer,
     result::Result,
+    util,
 };
 
 use super::page::AtlasPage;
@@ -16,8 +17,8 @@ pub struct Atlas {
 }
 
 impl Atlas {
-    pub(crate) fn new(path: &str) -> Result<Rc<Self>> {
-        let path = CString::new(path)?;
+    pub(crate) fn new(path: impl AsRef<Path>) -> Result<Rc<Self>> {
+        let path = util::c_path(path)?;
         let pointer = unsafe { spAtlas_createFromFile(path.as_ptr(), std::ptr::null_mut()) };
 
         Ok(Rc::new(Self {

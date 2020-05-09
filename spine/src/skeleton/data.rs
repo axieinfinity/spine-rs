@@ -1,10 +1,11 @@
-use std::{ffi::CString, ptr::NonNull, rc::Rc};
+use std::{path::Path, ptr::NonNull, rc::Rc};
 
 use spine_sys::{spSkeletonData, spSkeletonData_dispose, spSkeletonJson_readSkeletonDataFile};
 
 use crate::{
     error::{Error, NullPointerError},
     result::Result,
+    util,
 };
 
 use super::json::SkeletonJson;
@@ -14,8 +15,8 @@ pub struct SkeletonData {
 }
 
 impl SkeletonData {
-    pub fn from_json_file(path: &str, skeleton_json: SkeletonJson) -> Result<Rc<Self>> {
-        let path = CString::new(path)?;
+    pub fn from_json_file(path: impl AsRef<Path>, skeleton_json: SkeletonJson) -> Result<Rc<Self>> {
+        let path = util::c_path(path)?;
 
         let pointer = unsafe {
             spSkeletonJson_readSkeletonDataFile(skeleton_json.pointer.as_ptr(), path.as_ptr())
