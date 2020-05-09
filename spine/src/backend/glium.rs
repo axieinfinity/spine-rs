@@ -8,11 +8,7 @@ use glium::{
 };
 use image::{DynamicImage, GenericImageView};
 
-use crate::{
-    error::Error,
-    render::{Renderer, Vertex},
-    result::Result,
-};
+use crate::{error::Error, geometry::Vertex, render::Renderer, result::Result};
 
 implement_vertex!(Vertex, in_position, in_texture_coords);
 

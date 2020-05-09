@@ -1,6 +1,7 @@
 pub mod animation;
 pub mod atlas;
 pub mod backend;
+pub mod geometry;
 pub mod r#impl;
 pub mod skeleton;
 
@@ -12,6 +13,7 @@ mod result {
 }
 
 pub use error::*;
+pub use geometry::*;
 pub use render::*;
 pub use result::*;
 

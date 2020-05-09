@@ -8,7 +8,7 @@ use spine::{
     animation::{AnimationState, AnimationStateData},
     backend::glium::GliumRenderer,
     skeleton::{Skeleton, SkeletonData, SkeletonJson},
-    Renderer,
+    Bounds, Renderer,
 };
 
 enum Action {
@@ -45,10 +45,11 @@ fn main() {
 
     let mut skeleton = Skeleton::new(&skeleton_data);
 
-    skeleton
-        .set_attachment("shadow", None)
-        .unwrap()
-        .set_y(-360.0);
+    skeleton.set_attachment("shadow", None).unwrap();
+
+    let Bounds { y_min, y_max, .. } = skeleton.get_bounds();
+
+    skeleton.set_y((y_min - y_max) / 2.0);
 
     let mut animation_state = AnimationState::new(&animation_state_data);
 
