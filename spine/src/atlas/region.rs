@@ -1,6 +1,6 @@
 use std::{marker::PhantomData, ptr::NonNull};
 
-use spine_sys::{spAtlasPage, spAtlasRegion};
+use spine_sys::spAtlasRegion;
 
 use super::page::AtlasPage;
 
@@ -12,7 +12,7 @@ pub struct AtlasRegion<'atlas> {
 
 impl<'a> AtlasRegion<'a> {
     pub fn page(&self) -> AtlasPage<'a> {
-        let pointer = unsafe { self.pointer.as_ref().page as *mut spAtlasPage };
+        let pointer = unsafe { self.pointer.as_ref().page };
 
         AtlasPage {
             pointer: NonNull::new(pointer).unwrap(),

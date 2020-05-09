@@ -4,8 +4,8 @@ use std::{marker::PhantomData, os::raw::c_int, ptr::NonNull, slice};
 
 use spine_sys::{
     spAtlasRegion, spAttachment, spAttachmentType_SP_ATTACHMENT_MESH,
-    spAttachmentType_SP_ATTACHMENT_REGION, spBone, spMeshAttachment, spRegionAttachment,
-    spRegionAttachment_computeWorldVertices, spSlot, spVertexAttachment,
+    spAttachmentType_SP_ATTACHMENT_REGION, spMeshAttachment, spRegionAttachment,
+    spRegionAttachment_computeWorldVertices, spVertexAttachment,
     spVertexAttachment_computeWorldVertices,
 };
 
@@ -92,7 +92,7 @@ impl<'a> MeshAttachment<'a> {
         unsafe {
             spVertexAttachment_computeWorldVertices(
                 &self.0.as_ref().super_ as *const _ as *mut spVertexAttachment,
-                slot.0.as_ptr() as *mut spSlot,
+                slot.0.as_ptr(),
                 start as c_int,
                 count as c_int,
                 vertices.as_mut_ptr(),
@@ -127,7 +127,7 @@ impl<'a> RegionAttachment<'a> {
         unsafe {
             spRegionAttachment_computeWorldVertices(
                 self.0.as_ptr(),
-                bone.0.as_ptr() as *mut spBone,
+                bone.0.as_ptr(),
                 vertices.as_mut_ptr(),
                 offset as c_int,
                 stride as c_int,

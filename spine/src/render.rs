@@ -64,13 +64,13 @@ pub trait Renderer: Sized {
         let mut world_vertices = vec![0.0; MAX_VERTICES_PER_ATTACHMENT];
 
         for slot in skeleton.slots_ordered() {
-            let mut attachment = match slot.attachment() {
+            let attachment = match slot.attachment() {
                 Some(attachment) => attachment,
                 None => continue,
             };
 
-            let (indices, uvs, page) = match attachment {
-                Attachment::Mesh(ref mut mesh) => {
+            let (indices, uvs, page) = match &attachment {
+                Attachment::Mesh(mesh) => {
                     let page = mesh.region().page();
                     let world_vertices_len = mesh.world_vertices_len();
 
@@ -86,7 +86,7 @@ pub trait Renderer: Sized {
                     (mesh.triangles(), mesh.uvs(), page)
                 }
 
-                Attachment::Region(ref region) => {
+                Attachment::Region(region) => {
                     let page = region.region().page();
 
                     region.compute_world_vertices(
@@ -102,7 +102,7 @@ pub trait Renderer: Sized {
                 _ => continue,
             };
 
-            if let Some(ref last_page) = last_page {
+            if let Some(last_page) = &last_page {
                 if page.id() != last_page.id() {
                     render_mesh(&mut vertices, last_page)?;
                 }
@@ -120,7 +120,7 @@ pub trait Renderer: Sized {
             last_page = Some(page);
         }
 
-        if let Some(ref last_page) = last_page {
+        if let Some(last_page) = &last_page {
             render_mesh(&mut vertices, last_page)?;
         }
 

@@ -1,6 +1,6 @@
 use std::{marker::PhantomData, ptr::NonNull};
 
-use spine_sys::{spBone, spSlot, spSlot_setAttachment};
+use spine_sys::{spSlot, spSlot_setAttachment};
 
 use super::{attachment::Attachment, bone::Bone};
 
@@ -12,7 +12,7 @@ pub struct Slot<'skel>(
 
 impl<'a> Slot<'a> {
     pub fn bone(&self) -> Bone<'a> {
-        let pointer = unsafe { self.0.as_ref().bone as *mut spBone };
+        let pointer = unsafe { self.0.as_ref().bone };
         let pointer = NonNull::new(pointer).unwrap();
         Bone(pointer, PhantomData)
     }
