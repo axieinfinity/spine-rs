@@ -1,8 +1,11 @@
-use std::{ptr::NonNull, rc::Rc, slice};
+use std::{ffi::CString, marker::PhantomData, ptr::NonNull, rc::Rc, slice};
 
 use spine_sys::{
-    spSkeleton, spSkeleton_create, spSkeleton_dispose, spSkeleton_updateWorldTransform,
+    spSkeleton, spSkeleton_create, spSkeleton_dispose, spSkeleton_findSlot,
+    spSkeleton_setAttachment, spSkeleton_updateWorldTransform,
 };
+
+use crate::result::Result;
 
 use super::{data::SkeletonData, slot::Slot};
 
@@ -52,6 +55,32 @@ impl Skeleton {
     // impl_slots!(slots_mut, from_raw_parts_mut, slots, mut);
     impl_slots!(slots_ordered, from_raw_parts, drawOrder);
     // impl_slots!(slots_ordered_mut, from_raw_parts_mut, drawOrder, mut);
+
+    pub fn find_slot(&self, name: &str) -> Option<Slot> {
+        let name = CString::new(name).ok()?;
+        let pointer = unsafe { spSkeleton_findSlot(self.pointer.as_ptr(), name.as_ptr()) };
+        let pointer = NonNull::new(pointer)?;
+        Some(Slot(pointer, PhantomData))
+    }
+
+    pub fn set_attachment(
+        &mut self,
+        slot_name: &str,
+        attachment_name: Option<&str>,
+    ) -> Result<&mut Self> {
+        let slot_name = CString::new(slot_name)?;
+
+        let attachment_name = match attachment_name {
+            Some(name) => CString::new(name)?.as_ptr(),
+            None => std::ptr::null(),
+        };
+
+        unsafe {
+            spSkeleton_setAttachment(self.pointer.as_ptr(), slot_name.as_ptr(), attachment_name);
+        }
+
+        Ok(self)
+    }
 
     pub fn update_world_transform(&mut self) {
         unsafe { spSkeleton_updateWorldTransform(self.pointer.as_ptr()) }

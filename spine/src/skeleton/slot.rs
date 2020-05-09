@@ -1,6 +1,6 @@
 use std::{marker::PhantomData, ptr::NonNull};
 
-use spine_sys::{spBone, spSlot};
+use spine_sys::{spBone, spSlot, spSlot_setAttachment};
 
 use super::{attachment::Attachment, bone::Bone};
 
@@ -20,5 +20,17 @@ impl<'a> Slot<'a> {
     pub fn attachment(&self) -> Option<Attachment<'a>> {
         let pointer = unsafe { self.0.as_ref().attachment };
         Attachment::new(pointer).ok()
+    }
+
+    pub fn set_attachment(&mut self, attachment: Option<Attachment>) {
+        let pointer = match attachment {
+            Some(Attachment::Region(region)) => region.0.cast().as_ptr(),
+            Some(Attachment::Mesh(mesh)) => mesh.0.cast().as_ptr(),
+            Some(Attachment::Other) | None => std::ptr::null_mut(),
+        };
+
+        unsafe {
+            spSlot_setAttachment(self.0.as_ptr(), pointer);
+        }
     }
 }
