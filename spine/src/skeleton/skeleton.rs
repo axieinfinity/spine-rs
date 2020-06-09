@@ -86,7 +86,11 @@ impl Skeleton {
         let name = CString::new(name).ok()?;
         let pointer = unsafe { spSkeleton_findSlot(self.pointer.as_ptr(), name.as_ptr()) };
         let pointer = NonNull::new(pointer)?;
-        Some(Slot(pointer, PhantomData))
+
+        Some(Slot {
+            pointer,
+            _marker: PhantomData,
+        })
     }
 
     pub fn set_attachment(
