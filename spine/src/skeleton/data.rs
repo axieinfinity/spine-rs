@@ -12,6 +12,7 @@ use super::json::SkeletonJson;
 
 pub struct SkeletonData {
     pub(crate) pointer: NonNull<spSkeletonData>,
+    pub(crate) _skeleton_json: SkeletonJson,
 }
 
 impl SkeletonData {
@@ -24,6 +25,7 @@ impl SkeletonData {
 
         Ok(Rc::new(SkeletonData {
             pointer: NonNull::new(pointer).ok_or(Error::invalid_data(NullPointerError))?,
+            _skeleton_json: skeleton_json,
         }))
     }
 }
